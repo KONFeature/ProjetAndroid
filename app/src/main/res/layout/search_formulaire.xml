@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/searchTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Search your movie"
+        android:textAlignment="center"
+        android:textColor="@color/DefaultColor"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="24sp" />
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Title"
+        android:textAlignment="center"
+        android:textColor="@color/DefaultColor" />
+
+    <EditText
+        android:id="@+id/titleOfTheMovie"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Title" />
+
+    <TextView
+        android:id="@+id/resultText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Number of result / page (0 = no limit)"
+        android:textAlignment="center"
+        android:textColor="@color/DefaultColor" />
+
+    <EditText
+        android:id="@+id/numberOfResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="numberSigned"
+        android:text="10" />
+
+    <TextView
+        android:id="@+id/ageText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Maximum age of the movie (0 = no limit)"
+        android:textAlignment="center"
+        android:textColor="@color/DefaultColor" />
+
+    <EditText
+        android:id="@+id/ageMax"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="numberSigned"
+        android:text="0" />
+
+    <TextView
+        android:id="@+id/langText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="The original language of the movie"
+        android:textAlignment="center"
+        android:textColor="@color/DefaultColor" />
+
+    <Spinner
+        android:id="@+id/originalLanguage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/country_origine"
+        android:prompt="@string/country_title" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="24sp" />
+
+    <Button
+        android:id="@+id/launchSearch"
+        style="@style/AlertDialog.AppCompat.Light"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorButtonNormal"
+        android:text="Search"
+        android:textColor="@color/DefaultColor"
+        android:textSize="18sp" />
+</LinearLayout>

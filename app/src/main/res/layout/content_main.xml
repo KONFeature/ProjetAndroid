@@ -8,14 +8,10 @@
     tools:context="com.iutnantes.nivelais_rialet.projetandroid.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <include
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Option de recherche par default"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        layout="@layout/search_formulaire" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/search_parameters"
@@ -35,5 +31,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.982"
         app:srcCompat="@android:drawable/ic_menu_search" />
+
 
 </android.support.constraint.ConstraintLayout>
