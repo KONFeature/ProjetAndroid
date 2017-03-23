@@ -18,7 +18,6 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -38,10 +37,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //Initialisation des variable de recherche
         final EditText titleEditText = (EditText) findViewById(R.id.titleOfTheMovie);
-        EditText numberOfResultText = (EditText) findViewById(R.id.numberOfResult);
-        EditText ageMaxText = (EditText) findViewById(R.id.ageMax);
-        Spinner languageSelect = (Spinner) findViewById(R.id.originalLanguage);
-        SeekBar minimumPopularitySelectionner = (SeekBar) findViewById(R.id.popularityMin);
+        final EditText numberOfResultText = (EditText) findViewById(R.id.numberOfResult);
+        final EditText ageMaxText = (EditText) findViewById(R.id.ageMax);
+        final Spinner languageSelect = (Spinner) findViewById(R.id.originalLanguage);
+        final SeekBar minimumPopularitySelectionner = (SeekBar) findViewById(R.id.popularityMin);
 
         //Bouton du popup gauche (fenetre avec les choix principaux)
         ActionBarDrawerToggle toggleNavMenu = new ActionBarDrawerToggle(
@@ -53,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         minimumPopularitySelectionner.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //Action pendant changement de la value
                 TextView intituleSeekBar = (TextView) findViewById(R.id.popularityText);
                 double valProgress = progress/2.0;
                 intituleSeekBar.setText("Minimum popularity : "+valProgress);
@@ -60,12 +60,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                //Action quand on commence a changé la value
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                //action quand on arrete de changer la value
             }
         });
 
@@ -76,6 +76,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //Action quand on appuis sur le bouton de recherche
                 Snackbar.make(v, "Search of "+titleEditText.getText().toString()+" progress ...", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                //Cachage du formulaire de recherche, affichage de la liste de resultat et du bouton
+                findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
+                findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
+                searchOption.setEnabled(true);
+                searchOption.setVisibility(View.VISIBLE);
             }
         });
 
@@ -83,8 +89,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         searchOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Click sur le retour a la recherche", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Back to the search pannel", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                findViewById(R.id.searchFormulaire).setVisibility(View.VISIBLE);
+                findViewById(R.id.affichageFilm).setVisibility(View.GONE);
+                searchOption.setVisibility(View.GONE);
             }
         });
         searchOption.setEnabled(false);
@@ -117,14 +126,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     toolbar.setTitle("Search movie");
                     itemTop.setEnabled(true);
                     itemRecent.setEnabled(true);
+
+                    //Affichage et masquage des bon formulaire et du bouton
+                    findViewById(R.id.searchFormulaire).setVisibility(View.VISIBLE);
+                    findViewById(R.id.affichageFilm).setVisibility(View.GONE);
+                    searchOption.setEnabled(false);
+                    searchOption.setVisibility(View.GONE);
                 } else if (id == R.id.nav_recent) {
                     toolbar.setTitle("Recent movie");
                     itemTop.setEnabled(true);
                     itemSearch.setEnabled(true);
+
+                    findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
+                    findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
+                    searchOption.setEnabled(false);
+                    searchOption.setVisibility(View.GONE);
                 } else if (id == R.id.nav_top) {
                     toolbar.setTitle("Top movie");
                     itemSearch.setEnabled(true);
                     itemRecent.setEnabled(true);
+
+                    findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
+                    findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
+                    searchOption.setEnabled(false);
+                    searchOption.setVisibility(View.GONE);
                 }
 
                 //Désactive l'option selectionné
@@ -187,4 +212,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }

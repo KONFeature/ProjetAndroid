@@ -8,4 +8,5 @@ package com.iutnantes.nivelais_rialet.projetandroid;
  */
 
 public class RequetteManager {
+
 }
