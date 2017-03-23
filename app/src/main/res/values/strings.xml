@@ -24,9 +24,9 @@
     <string name="searchlayout_country_default_prompt">Choose a country</string>
     <string-array name="searchlayout_country_choice">
         <item>All</item>
-        <item>United States</item>
-        <item>United Kingdom</item>
-        <item>France</item>
+        <item>US</item>
+        <item>GB</item>
+        <item>FR</item>
     </string-array>
     <string name="searchlayout_popularity_text">Minimum popularity : 0.0</string>
     <string name="searchlayout_launch_button">Search</string>

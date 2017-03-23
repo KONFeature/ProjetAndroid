@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
                 searchOption.setEnabled(true);
                 searchOption.setVisibility(View.VISIBLE);
+
+                RequetteManager requette = new RequetteManager(titleEditText.getText().toString(), (int) ageMaxText.getText().to);
             }
         });
 
