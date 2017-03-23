@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Projet Android</string>
+
+    <string name="navigation_menu_open">Open menu drawer</string>
+    <string name="navigation_menu_close">Close menu drawer</string>
+
+    <string name="navigation_left_pannel_open">Open left pannel drawer</string>
+    <string name="navigation_left_pannel_close">Close left pannel drawer</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
