@@ -1,11 +1,19 @@
 package com.iutnantes.nivelais_rialet.projetandroid;
 
+import android.content.Context;
+import android.util.Log;
+
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Iterator;
 
 /**
  * Created by Nivelais Quentin on 23/03/2017.
@@ -14,6 +22,8 @@ import org.json.JSONObject;
  */
 
 public class RequetteManager {
+
+    private static final String TAG = "MyActivity";
 
     private String title;
     private int ageMax;
@@ -24,7 +34,7 @@ public class RequetteManager {
     private String baseReq;
     private Film[] listFilm;
 
-    public RequetteManager(String title, int ageMax, int numberPerPage, double minPopularity, String language) {
+    public RequetteManager(String title, int ageMax, int numberPerPage, double minPopularity, String language, Context context) {
         this.title = title;
         this.ageMax = ageMax;
         this.numberPerPage = numberPerPage;
@@ -37,11 +47,11 @@ public class RequetteManager {
         String req = this.baseReq + this.apiKey + "&include_adult=false";
         //Ajout du titre a la requette
         req += "&query=" + this.title.replace(" ", "+");
-        this.envoiRequette(req);
+        this.envoiRequette(req, context);
 
     }
 
-    public RequetteManager(int type) {
+    public RequetteManager(int type, Context context) {
         this.apiKey = "18ebf0d523ea611028cdb5cad22392f1";
         //Type nous donne le type de requette (top movie ou recent movie)
         if (type == 0) { //Top movie
@@ -50,25 +60,38 @@ public class RequetteManager {
             this.baseReq = "https://api.themoviedb.org/3/search/movie?api_key=";
         }
         String req = this.baseReq + this.apiKey;
-        envoiRequette(req);
+        envoiRequette(req, context);
     }
 
-    private void envoiRequette(String req) {
-        //Envoi de la requette
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, req, null, new Response.Listener<JSONObject>() {
+    private void envoiRequette(String req, Context context) {
 
-            @Override
-            public void onResponse(JSONObject response) {
-                //Trouvé le nombre de res, pour chaque res ajouté un film
-            }
-        }, new Response.ErrorListener() {
+        RequestQueue queue = Volley.newRequestQueue(context);
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //Gestion des erreur
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, req, null, new Response.Listener<JSONObject>() {
 
-            }
-        });
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.v(TAG, "Requette bien effectué : " + response.toString());
+                        for(int i = 0; i<response.names().length(); i++){
+                            try {
+                                Log.v(TAG, "Detail res = " + response.names().getString(i) + " value = " + response.get(response.names().getString(i)));
+                            } catch (JSONException e) {
+                                Log.v(TAG, "Erreur recuperation json : " + e.toString());
+                            }
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.v(TAG, "Erreur lors de la requette : " + error.toString());
+                    }
+                });
+
+        Log.v(TAG, "Requette : " + jsObjRequest.toString());
+
+        queue.add(jsObjRequest);
     }
 
     public String getTitle() {

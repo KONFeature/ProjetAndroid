@@ -1,9 +1,11 @@
 package com.iutnantes.nivelais_rialet.projetandroid;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,8 +23,11 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "MyActivity";
+
     private Toolbar toolbar;
     private FloatingActionButton searchOption;
+    private double valProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +59,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //Action pendant changement de la value
                 TextView intituleSeekBar = (TextView) findViewById(R.id.popularityText);
-                double valProgress = progress/2.0;
-                intituleSeekBar.setText("Minimum popularity : "+valProgress);
+                valProgress = progress/2.0;
+                intituleSeekBar.setText("Minimum popularity : "+ valProgress);
             }
 
             @Override
@@ -83,7 +88,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 searchOption.setEnabled(true);
                 searchOption.setVisibility(View.VISIBLE);
 
-                RequetteManager requette = new RequetteManager(titleEditText.getText().toString(), (int) ageMaxText.getText().to);
+                RequetteManager requette = new RequetteManager(
+                        (String) titleEditText.getText().toString(),
+                        (int) Integer.parseInt(ageMaxText.getText().toString()),
+                        (int) Integer.parseInt(numberOfResultText.getText().toString()),
+                        (double) valProgress,
+                        (String) languageSelect.getSelectedItem().toString(),
+                        (Context) getApplicationContext()
+                        );
+
             }
         });
 

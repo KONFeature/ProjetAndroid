@@ -18,7 +18,7 @@
     <string name="searchlayout_principal_title">Search your movie</string>
     <string name="searchlayout_title_text">Title</string>
     <string name="searchlayout_title_edittext">Title</string>
-    <string name="searchlayout_maxresult_text">Number of result / page (0 = no limit)</string>
+    <string name="searchlayout_maxresult_text">Number of result</string>
     <string name="searchlayout_maxage_text">Maximum age of the movie (0 = no limit)</string>
     <string name="searchlayout_country_text">The original country of the movie</string>
     <string name="searchlayout_country_default_prompt">Choose a country</string>
