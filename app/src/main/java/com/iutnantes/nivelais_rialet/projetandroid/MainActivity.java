@@ -13,6 +13,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -31,17 +36,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         searchOption = (FloatingActionButton) findViewById(R.id.search_parameters);
 
+        //Initialisation des variable de recherche
+        final EditText titleEditText = (EditText) findViewById(R.id.titleOfTheMovie);
+        EditText numberOfResultText = (EditText) findViewById(R.id.numberOfResult);
+        EditText ageMaxText = (EditText) findViewById(R.id.ageMax);
+        Spinner languageSelect = (Spinner) findViewById(R.id.originalLanguage);
+        SeekBar minimumPopularitySelectionner = (SeekBar) findViewById(R.id.popularityMin);
+
         //Bouton du popup gauche (fenetre avec les choix principaux)
         ActionBarDrawerToggle toggleNavMenu = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_menu_open, R.string.navigation_menu_close);
         drawer.addDrawerListener(toggleNavMenu);
         toggleNavMenu.syncState();
 
+        //Modification de la valeur du seekbar
+        minimumPopularitySelectionner.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                TextView intituleSeekBar = (TextView) findViewById(R.id.popularityText);
+                double valProgress = progress/2.0;
+                intituleSeekBar.setText("Minimum popularity : "+valProgress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        //Bouton de recherche principal
+        Button launchingSearch = (Button) findViewById(R.id.launchSearch);
+        launchingSearch.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v){
+                //Action quand on appuis sur le bouton de recherche
+                Snackbar.make(v, "Search of "+titleEditText.getText().toString()+" progress ...", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
         //Bouton de recherche avancé (désactivé par default, activé uniquement apres une recherche)
         searchOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Click sur le retour a la recherche", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });

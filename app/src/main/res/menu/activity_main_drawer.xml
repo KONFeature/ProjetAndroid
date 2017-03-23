@@ -5,15 +5,15 @@
         <item
             android:id="@+id/nav_search"
             android:icon="@drawable/search_icon"
-            android:title="Search" />
+            android:title="@string/rightpannel_search" />
         <item
             android:id="@+id/nav_top"
             android:icon="@drawable/top_icon"
-            android:title="Top movie" />
+            android:title="@string/rightpannel_top" />
         <item
             android:id="@+id/nav_recent"
             android:icon="@drawable/receent_icon"
-            android:title="Recent Movie" />
+            android:title="@string/rightpannel_recent" />
     </group>
 
 </menu>
