@@ -18,99 +18,111 @@
         android:layout_width="match_parent"
         android:layout_height="24sp" />
 
-    <TextView
-        android:id="@+id/titleText"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/searchlayout_title_text"
-        android:textAlignment="center"
-        android:textColor="@color/DefaultColor" />
+        android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/titleOfTheMovie"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="@string/searchlayout_title_edittext" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/resultText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/searchlayout_maxresult_text"
-        android:textAlignment="center"
-        android:textColor="@color/DefaultColor" />
+            <TextView
+                android:id="@+id/titleText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/searchlayout_title_text"
+                android:textAlignment="center"
+                android:textColor="@color/DefaultColor" />
 
-    <EditText
-        android:id="@+id/numberOfResult"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="numberSigned"
-        android:text="10" />
+            <EditText
+                android:id="@+id/titleOfTheMovie"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="@string/searchlayout_title_edittext" />
 
-    <TextView
-        android:id="@+id/ageText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/searchlayout_maxage_text"
-        android:textAlignment="center"
-        android:textColor="@color/DefaultColor" />
+            <TextView
+                android:id="@+id/resultText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/searchlayout_maxresult_text"
+                android:textAlignment="center"
+                android:textColor="@color/DefaultColor" />
 
-    <EditText
-        android:id="@+id/ageMax"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="numberSigned"
-        android:text="0" />
+            <EditText
+                android:id="@+id/numberOfResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="numberSigned"
+                android:text="10" />
 
-    <TextView
-        android:id="@+id/langText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/searchlayout_country_text"
-        android:textAlignment="center"
-        android:textColor="@color/DefaultColor" />
+            <TextView
+                android:id="@+id/ageText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/searchlayout_maxage_text"
+                android:textAlignment="center"
+                android:textColor="@color/DefaultColor" />
 
-    <Spinner
-        android:id="@+id/originalLanguage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/searchlayout_country_choice"
-        android:prompt="@string/searchlayout_country_default_prompt" />
+            <EditText
+                android:id="@+id/ageMax"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="numberSigned"
+                android:text="0" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="12sp" />
+            <TextView
+                android:id="@+id/langText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/searchlayout_country_text"
+                android:textAlignment="center"
+                android:textColor="@color/DefaultColor" />
 
-    <TextView
-        android:id="@+id/popularityText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/searchlayout_popularity_text"
-        android:textAlignment="center"
-        android:textColor="@color/DefaultColor" />
+            <Spinner
+                android:id="@+id/originalLanguage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/searchlayout_country_choice"
+                android:prompt="@string/searchlayout_country_default_prompt" />
 
-    <SeekBar
-        android:id="@+id/popularityMin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="20"
-        android:progress="1" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="12sp" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="24sp" />
+            <TextView
+                android:id="@+id/popularityText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/searchlayout_popularity_text"
+                android:textAlignment="center"
+                android:textColor="@color/DefaultColor" />
 
-    <Button
-        android:id="@+id/launchSearch"
-        style="@style/AlertDialog.AppCompat.Light"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorButtonNormal"
-        android:text="@string/searchlayout_launch_button"
-        android:textColor="@color/DefaultColor"
-        android:textSize="18sp" />
+            <SeekBar
+                android:id="@+id/popularityMin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="20"
+                android:progress="1" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="24sp" />
+
+            <Button
+                android:id="@+id/launchSearch"
+                style="@style/AlertDialog.AppCompat.Light"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorButtonNormal"
+                android:text="@string/searchlayout_launch_button"
+                android:textColor="@color/DefaultColor"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>
