@@ -10,9 +10,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -23,8 +26,10 @@ import java.util.Iterator;
 
 public class RequetteManager {
 
+    //Variable global d'utilisation
     private static final String TAG = "MyActivity";
 
+    //Les variable concernant le film recherché
     private String title;
     private int ageMax;
     private int numberPerPage;
@@ -32,9 +37,17 @@ public class RequetteManager {
     private String language;
     private String apiKey;
     private String baseReq;
-    private Film[] listFilm;
+    private ArrayList<Film> listFilm;
+
+    //Variable general pour les requette
+    private int compteurRequete;
+    private int nombrePageTotal;
+    private int pageActuel;
+    private String finalReq;
+    private Context context;
 
     public RequetteManager(String title, int ageMax, int numberPerPage, double minPopularity, String language, Context context) {
+        //Definitions des variable pour le film
         this.title = title;
         this.ageMax = ageMax;
         this.numberPerPage = numberPerPage;
@@ -43,13 +56,18 @@ public class RequetteManager {
         this.apiKey = "18ebf0d523ea611028cdb5cad22392f1";
         this.baseReq = "https://api.themoviedb.org/3/search/movie?api_key=";
 
+        //Definition des variable global
+        this.definieRequetteVar();
+        this.context = context;
+
         //Definition de la requette de base
-        String req = this.baseReq + this.apiKey + "&include_adult=false";
+        this.finalReq = this.baseReq + this.apiKey + "&include_adult=false";
         //Ajout du titre a la requette
-        req += "&query=" + this.title.replace(" ", "+");
-        this.envoiRequette(req, context);
+        this.finalReq += "&query=" + this.title.replace(" ", "+");
+        this.envoiRequette();
 
     }
+
 
     public RequetteManager(int type, Context context) {
         this.apiKey = "18ebf0d523ea611028cdb5cad22392f1";
@@ -59,39 +77,57 @@ public class RequetteManager {
         } else { //Recent movie
             this.baseReq = "https://api.themoviedb.org/3/search/movie?api_key=";
         }
-        String req = this.baseReq + this.apiKey;
-        envoiRequette(req, context);
+        this.finalReq = this.baseReq + this.apiKey;
+        this.definieRequetteVar();
+        this.context = context;
+        envoiRequette();
     }
 
-    private void envoiRequette(String req, Context context) {
+    private void definieRequetteVar(){
+        this.compteurRequete = 1;
+        this.pageActuel = 1;
+        this.nombrePageTotal = 1;
+        this.listFilm = new ArrayList<Film>();
+    }
 
-        RequestQueue queue = Volley.newRequestQueue(context);
+    private void envoiRequette() {
+        //Init des variable de reconnaissance avec premiere requette (et init du compteur)
+        RequestQueue queue = Volley.newRequestQueue(this.context);
 
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, req, null, new Response.Listener<JSONObject>() {
+        if (pageActuel <= nombrePageTotal && compteurRequete < 9) {
+            JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, this.finalReq + "&page=" + pageActuel, null, new Response.Listener<JSONObject>() {
 
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.v(TAG, "Requette bien effectué : " + response.toString());
-                        for(int i = 0; i<response.names().length(); i++){
-                            try {
-                                Log.v(TAG, "Detail res = " + response.names().getString(i) + " value = " + response.get(response.names().getString(i)));
-                            } catch (JSONException e) {
-                                Log.v(TAG, "Erreur recuperation json : " + e.toString());
-                            }
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        Log.v(TAG, "Requette bien effectué, voici le resultat : " + response.get("results"));
+                        for (int i = 0; i < response.getJSONArray("results").length(); i++) {
+                            Film tmp = new Film(response.getJSONArray("results").get(i).toString());
+                            listFilm.add(tmp);
                         }
+                        nombrePageTotal = (int) response.get("total_pages");
+                        pageActuel++;
+                        compteurRequete++;
+                        envoiRequette();
+                    } catch (JSONException e) {
+                        Log.v(TAG, "Erreur recuperation json : " + e.toString());
                     }
-                }, new Response.ErrorListener() {
+                }
+            }, new Response.ErrorListener() {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.v(TAG, "Erreur lors de la requette : " + error.toString());
-                    }
-                });
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.v(TAG, "Erreur lors de la requette : " + error.toString());
+                }
+            });
+            Log.v(TAG, "Requette : " + jsObjRequest.toString());
+            queue.add(jsObjRequest);
+        } else {
+            Log.v(TAG, "Sortie de la boucle : " + pageActuel + " - " + nombrePageTotal + " - " + compteurRequete);
+            Log.v(TAG, "Liste des films : " + this.listFilm.toString());
+            definieRequetteVar();
+        }
 
-        Log.v(TAG, "Requette : " + jsObjRequest.toString());
-
-        queue.add(jsObjRequest);
     }
 
     public String getTitle() {
