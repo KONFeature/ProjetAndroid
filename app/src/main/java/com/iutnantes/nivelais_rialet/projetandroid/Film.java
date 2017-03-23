@@ -10,19 +10,24 @@ package com.iutnantes.nivelais_rialet.projetandroid;
 public class Film {
 
     private String titre;
+    private String author;
     private String synopsis;
     private String linkToImage;
+    private String linkToVideo;
+    private int budget;
+    private int nbrVote;
     private double popularite;
 
-    public Film(String titre, String synopsis, String image, double popularite){
-        this.titre = titre;
-        this.synopsis = synopsis;
-        this.linkToImage = image;
-        this.popularite = popularite;
+    public Film(String gson){
+        
     }
 
     public String getTitre() {
         return titre;
+    }
+
+    public String getAuthor() {
+        return author;
     }
 
     public String getSynopsis() {
@@ -37,14 +42,15 @@ public class Film {
         return popularite;
     }
 
+    @Override
     public String toString() {
         return "Film{" +
                 "titre='" + titre + '\'' +
+                ", author='" + author + '\'' +
                 ", synopsis='" + synopsis + '\'' +
                 ", linkToImage='" + linkToImage + '\'' +
                 ", popularite=" + popularite +
                 '}';
     }
-
 }
 
