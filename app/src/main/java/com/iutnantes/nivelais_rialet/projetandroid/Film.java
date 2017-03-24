@@ -2,7 +2,6 @@ package com.iutnantes.nivelais_rialet.projetandroid;
 
 import android.util.Log;
 
-import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +11,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+
+import static java.util.Calendar.YEAR;
 
 /**
  * Created by Nivelais Quentin on 23/03/2017.
@@ -36,7 +39,7 @@ public class Film {
     private double popularite;
 
     //Les var global
-    private static final String TAG = "MyActivity";
+    private static final String TAG = "Film_Simple";
 
     public Film(String gson) {
         try {
@@ -54,7 +57,7 @@ public class Film {
 
             //Envoi de la date
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            java.util.Date date = new java.util.Date();
+            Date date = new java.util.Date();
             try {
                 this.sortieDuFilm = dateFormat.parse(jsonFilm.get("release_date").toString());
             } catch (ParseException e) {
@@ -70,6 +73,60 @@ public class Film {
         } catch (JSONException e) {
             Log.v(TAG, "Erreur conversion json : " + e.toString());
         }
+    }
+
+    public boolean corespondToReq(String json) {
+        boolean res = false;
+        try {
+            JSONObject toVerif = new JSONObject(json);
+            if (Integer.parseInt(toVerif.get("type").toString()) != 0) { //Si c'est un resultat qui na pas besoin de verif
+                res = true;
+                return res;
+            } else { //Si c'est un resultat de recherche
+                if (this.popularite > Double.parseDouble(toVerif.get("minPopularity").toString())) { //Si la popularité minimum est atteinte
+                    //Verification de la langue
+                    if (!"all".toLowerCase().trim().equals(toVerif.get("language").toString().toLowerCase().trim())) {
+                        if(toVerif.get("language") == this.language){
+                            res = true;
+                            return res;
+                        } else {
+                            res = false;
+                            return res;
+                        }
+                    } else {
+                        //Verification de l'age minimum du film
+                        if(Integer.parseInt(toVerif.get("ageMax").toString()) != 0){
+                            Date jourActuelle = new Date();
+                            Calendar b = getCalendar(jourActuelle);
+                            Calendar a = getCalendar(this.sortieDuFilm);
+                            int diff = b.get(YEAR) - a.get(YEAR);
+                            if(diff > Integer.parseInt(toVerif.get("ageMax").toString())){
+                                res = false;
+                                return res;
+                            } else {
+                                res = true;
+                                return res;
+                            }
+                        } else {
+                            res = true;
+                            return res;
+                        }
+                    }
+                } else {
+                    res = false;
+                    return res;
+                }
+            }
+        } catch (JSONException e) {
+            Log.v(TAG, "Erreur de recuperation du JSON : " + e.toString());
+        }
+        return res;
+    }
+
+    public static Calendar getCalendar(Date date) {
+        Calendar cal = Calendar.getInstance(Locale.FRANCE);
+        cal.setTime(date);
+        return cal;
     }
 
     public String getLanguage() {

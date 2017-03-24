@@ -23,14 +23,18 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String TAG = "MyActivity";
+    private static final String TAG = "Main";
 
     private Toolbar toolbar;
     private FloatingActionButton searchOption;
     private double valProgress;
+    private Thread thread;
+    private MainActivity activiteEnCour;
+    private RequetteManager requetteSender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        this.activiteEnCour = this;
         //Creation de la base de l'appli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -88,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 searchOption.setEnabled(true);
                 searchOption.setVisibility(View.VISIBLE);
 
-                RequetteManager requette = new RequetteManager(
+                requetteSender = new RequetteManager(
                         (String) titleEditText.getText().toString(),
                         (int) Integer.parseInt(ageMaxText.getText().toString()),
                         (int) Integer.parseInt(numberOfResultText.getText().toString()),

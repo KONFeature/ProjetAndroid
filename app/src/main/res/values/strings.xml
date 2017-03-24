@@ -20,13 +20,13 @@
     <string name="searchlayout_title_edittext">Title</string>
     <string name="searchlayout_maxresult_text">Number of result</string>
     <string name="searchlayout_maxage_text">Maximum age of the movie (0 = no limit)</string>
-    <string name="searchlayout_country_text">The original country of the movie</string>
-    <string name="searchlayout_country_default_prompt">Choose a country</string>
+    <string name="searchlayout_country_text">The original language of the movie</string>
+    <string name="searchlayout_country_default_prompt">Choose a Language</string>
     <string-array name="searchlayout_country_choice">
         <item>All</item>
-        <item>US</item>
-        <item>GB</item>
-        <item>FR</item>
+        <item>en</item>
+        <item>es</item>
+        <item>fr</item>
     </string-array>
     <string name="searchlayout_popularity_text">Minimum popularity : 0.0</string>
     <string name="searchlayout_launch_button">Search</string>
