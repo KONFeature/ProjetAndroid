@@ -52,6 +52,12 @@ public class FilmDetail {
 
     }
 
+    //Methode executant la requette pour avoir toute les information
+    private void executeRequete(){
+
+    }
+
+    //Methode permettant de convertir le resultat de la requette en film
     private boolean constructFromJson(String json) {
         boolean res;
         try {
@@ -62,6 +68,11 @@ public class FilmDetail {
             res = false;
         }
         return res;
+    }
+
+    //Methode affichant tout les attribut sur l'interface
+    private void affichageInterface(){
+
     }
 
     @Override

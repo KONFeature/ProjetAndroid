@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    //fonction pour l'init de l'envoi des requette
+    //methode pour l'init de l'envoi des requette
     private void prepareRequette() {
         this.compteurRequete = 1;
         this.pageActuel = 1;
@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.listFilm = new ArrayList<Film>();
     }
 
-    //Fonction pour l'envoi de la requette
+    //methode pour l'envoi de la requette
     private void envoiRequette() {
         //Init des variable de reconnaissance avec premiere requette (et init du compteur)
         RequestQueue queue = Volley.newRequestQueue(this.contextPourRequette);
@@ -312,12 +312,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
             queue.add(jsObjRequest);
         } else {
-            Log.v(TAG, "Liste des films : " + this.listFilm.toString());
+            this.addMovieToList();
             prepareRequette();
         }
     }
 
-    private void addMovieToList(String listFilm) {
+    //Methode ajoutant la liste des films a la vue
+    private void addMovieToList() {
+        Log.v(TAG, "Liste des films : " + this.listFilm.toString());
         ListView listOfTheFilm = (ListView) findViewById(R.id.listOfFilm);
     }
 
