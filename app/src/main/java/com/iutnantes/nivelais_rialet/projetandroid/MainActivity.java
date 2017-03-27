@@ -17,9 +17,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -30,10 +43,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private double valProgress;
     private Thread thread;
     private MainActivity activiteEnCour;
-    private RequetteManager requetteSender;
+
+    //Fonction pour l'envoi des requettes
+    private int compteurRequete;
+    private int nombrePageTotal;
+    private int pageActuel;
+    private int maxReq;
+    private String finalReq;
+    private String paramForFilm;
+    private ArrayList<Film> listFilm;
+    private String apiKey;
+    private String baseReq;
+    private Context contextPourRequette;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Init des variable de base pour l'envoi de requette
+        this.apiKey = "18ebf0d523ea611028cdb5cad22392f1";
+        this.maxReq = 9;
+        this.contextPourRequette = getApplicationContext();
+
         this.activiteEnCour = this;
         //Creation de la base de l'appli
         super.onCreate(savedInstanceState);
@@ -92,14 +121,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 searchOption.setEnabled(true);
                 searchOption.setVisibility(View.VISIBLE);
 
-                requetteSender = new RequetteManager(
-                        (String) titleEditText.getText().toString(),
-                        (int) Integer.parseInt(ageMaxText.getText().toString()),
-                        (int) Integer.parseInt(numberOfResultText.getText().toString()),
-                        (double) valProgress,
-                        (String) languageSelect.getSelectedItem().toString(),
-                        (Context) getApplicationContext()
-                        );
+                //Preparation de la requette :
+                baseReq = "https://api.themoviedb.org/3/search/movie?api_key=";
+                finalReq = baseReq+apiKey+ "&include_adult=false";
+                finalReq += "&query=" + titleEditText.getText().toString().replace(" ", "+");
+                //Ajout des parametre de recherche
+                JSONObject paramDuFilm = new JSONObject();
+                try {
+                    paramDuFilm.put("type", 0);
+                    paramDuFilm.put("ageMax", Integer.parseInt(ageMaxText.getText().toString()));
+                    paramDuFilm.put("minPopularity", valProgress);
+                    paramDuFilm.put("language", languageSelect.getSelectedItem().toString());
+                } catch (JSONException e) {
+                    Log.v(TAG, "Erreur de création du JSON : " + e.toString());
+                }
+
+                paramForFilm = paramDuFilm.toString();
+                Log.v(TAG, "Le JSON a parsé : " + paramDuFilm.toString());
+
+                prepareRequette();
+                envoiRequette();
 
             }
         });
@@ -125,9 +166,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         itemSearch.setChecked(true);
         itemSearch.setEnabled(false);
 
-        //Listner du pannel gauche
-        NavigationView navigationLeftView = (NavigationView) findViewById(R.id.nav_view);
-        navigationLeftView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 //Recuperation de tout les autre item
@@ -230,6 +269,59 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    //fonction pour l'init de l'envoi des requette
+    private void prepareRequette(){
+        this.compteurRequete = 1;
+        this.pageActuel = 1;
+        this.nombrePageTotal = 1;
+        this.listFilm = new ArrayList<Film>();
+    }
+
+    //Fonction pour l'envoi de la requette
+    private void envoiRequette() {
+        //Init des variable de reconnaissance avec premiere requette (et init du compteur)
+        RequestQueue queue = Volley.newRequestQueue(this.contextPourRequette);
+
+        if (pageActuel <= nombrePageTotal && compteurRequete < this.maxReq) {
+            JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, this.finalReq + "&page=" + pageActuel, null, new Response.Listener<JSONObject>() {
+
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        for (int i = 0; i < response.getJSONArray("results").length(); i++) {
+
+                            Film tmp = new Film(response.getJSONArray("results").get(i).toString());
+
+                            if(tmp.corespondToReq(paramForFilm)){//Si le film correspond a la requette demendé
+                                listFilm.add(tmp);
+                            }
+                        }
+                        nombrePageTotal = (int) response.get("total_pages");
+                        pageActuel++;
+                        compteurRequete++;
+                        envoiRequette();
+                    } catch (JSONException e) {
+                        Log.v(TAG, "Erreur recuperation json : " + e.toString());
+                    }
+                }
+            }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.v(TAG, "Erreur lors de la requette : " + error.toString());
+                }
+            });
+            queue.add(jsObjRequest);
+        } else {
+            Log.v(TAG, "Liste des films : " + this.listFilm.toString());
+            prepareRequette();
+        }
+    }
+
+    private void addMovieToList(String listFilm){
+        ListView listOfTheFilm = (ListView) findViewById(R.id.listOfFilm);
     }
 
 }
