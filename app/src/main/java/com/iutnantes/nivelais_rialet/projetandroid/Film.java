@@ -2,7 +2,6 @@ package com.iutnantes.nivelais_rialet.projetandroid;
 
 import android.util.Log;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +25,8 @@ import static java.util.Calendar.YEAR;
 
 public class Film {
 
+    //Les var global
+    private static final String TAG = "Film_Simple";
     //Les var d'un film
     private String titre;
     private String synopsis;
@@ -37,9 +38,6 @@ public class Film {
     private int[] genreId;
     private int nbrVote;
     private double popularite;
-
-    //Les var global
-    private static final String TAG = "Film_Simple";
 
     public Film(String gson) {
         try {
@@ -75,18 +73,25 @@ public class Film {
         }
     }
 
+    public static Calendar getCalendar(Date date) {
+        //Creation du calendrier pour la comparaison et trouver l'age du film
+        Calendar cal = Calendar.getInstance(Locale.FRANCE);
+        cal.setTime(date);
+        return cal;
+    }
+
     public boolean corespondToReq(String json) {
-        boolean res = false;
+        boolean res = false; //Variable de retour
         try {
-            JSONObject toVerif = new JSONObject(json);
+            JSONObject toVerif = new JSONObject(json); //Conversion de la string en jsonobject
             if (Integer.parseInt(toVerif.get("type").toString()) != 0) { //Si c'est un resultat qui na pas besoin de verif
                 res = true;
                 return res;
             } else { //Si c'est un resultat de recherche
                 if (this.popularite > Double.parseDouble(toVerif.get("minPopularity").toString())) { //Si la popularité minimum est atteinte
-                    //Verification de la langue
+                    //Verification de la langue et ajout au attribut
                     if (!"all".toLowerCase().trim().equals(toVerif.get("language").toString().toLowerCase().trim())) {
-                        if(toVerif.get("language") == this.language){
+                        if (toVerif.get("language") == this.language) {
                             res = true;
                             return res;
                         } else {
@@ -94,13 +99,13 @@ public class Film {
                             return res;
                         }
                     } else {
-                        //Verification de l'age minimum du film
-                        if(Integer.parseInt(toVerif.get("ageMax").toString()) != 0){
+                        //Verification de l'age minimum du film et ajout au attribut
+                        if (Integer.parseInt(toVerif.get("ageMax").toString()) != 0) {
                             Date jourActuelle = new Date();
                             Calendar b = getCalendar(jourActuelle);
                             Calendar a = getCalendar(this.sortieDuFilm);
                             int diff = b.get(YEAR) - a.get(YEAR);
-                            if(diff > Integer.parseInt(toVerif.get("ageMax").toString())){
+                            if (diff > Integer.parseInt(toVerif.get("ageMax").toString())) {
                                 res = false;
                                 return res;
                             } else {
@@ -123,12 +128,6 @@ public class Film {
         return res;
     }
 
-    public static Calendar getCalendar(Date date) {
-        Calendar cal = Calendar.getInstance(Locale.FRANCE);
-        cal.setTime(date);
-        return cal;
-    }
-
     public String getLanguage() {
         return language;
     }
@@ -141,12 +140,7 @@ public class Film {
         return genreId;
     }
 
-    public static String getTAG() {
-        return TAG;
-    }
-
     public String getTitre() {
-
         return titre;
     }
 

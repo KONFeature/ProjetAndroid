@@ -4,17 +4,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -35,16 +35,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
+    //Variable pour les logs
     private static final String TAG = "Main";
 
+    //Variable specifique pour le main activity
     private Toolbar toolbar;
     private FloatingActionButton searchOption;
     private double valProgress;
-    private Thread thread;
-    private MainActivity activiteEnCour;
 
-    //Fonction pour l'envoi des requettes
+    //Variable specifique au requette
     private int compteurRequete;
     private int nombrePageTotal;
     private int pageActuel;
@@ -63,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.maxReq = 9;
         this.contextPourRequette = getApplicationContext();
 
-        this.activiteEnCour = this;
         //Creation de la base de l'appli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -92,8 +90,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //Action pendant changement de la value
                 TextView intituleSeekBar = (TextView) findViewById(R.id.popularityText);
-                valProgress = progress/2.0;
-                intituleSeekBar.setText("Minimum popularity : "+ valProgress);
+                valProgress = progress / 2.0;
+                intituleSeekBar.setText("Minimum popularity : " + valProgress);
             }
 
             @Override
@@ -110,9 +108,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Bouton de recherche principal
         Button launchingSearch = (Button) findViewById(R.id.launchSearch);
         launchingSearch.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v){
+            public void onClick(View v) {
                 //Action quand on appuis sur le bouton de recherche
-                Snackbar.make(v, "Search of "+titleEditText.getText().toString()+" progress ...", Snackbar.LENGTH_LONG)
+                Snackbar.make(v, "Search of " + titleEditText.getText().toString() + " progress ...", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
                 //Cachage du formulaire de recherche, affichage de la liste de resultat et du bouton
@@ -123,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 //Preparation de la requette :
                 baseReq = "https://api.themoviedb.org/3/search/movie?api_key=";
-                finalReq = baseReq+apiKey+ "&include_adult=false";
+                finalReq = baseReq + apiKey + "&include_adult=false";
                 finalReq += "&query=" + titleEditText.getText().toString().replace(" ", "+");
                 //Ajout des parametre de recherche
                 JSONObject paramDuFilm = new JSONObject();
@@ -160,17 +158,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         searchOption.setVisibility(View.GONE);
 
         //Activation de l'item de recherche par default
-        NavigationView navigationView= (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu menu = navigationView.getMenu();
         MenuItem itemSearch = menu.findItem(R.id.nav_search);
         itemSearch.setChecked(true);
         itemSearch.setEnabled(false);
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 //Recuperation de tout les autre item
-                NavigationView navigationView= (NavigationView) findViewById(R.id.nav_view);
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 Menu menu = navigationView.getMenu();
                 MenuItem itemSearch = menu.findItem(R.id.nav_search);
                 MenuItem itemTop = menu.findItem(R.id.nav_top);
@@ -237,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         //Recuperation de tout les autres item
-        NavigationView navigationView= (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu menu = navigationView.getMenu();
         MenuItem itemSearch = menu.findItem(R.id.nav_search);
         MenuItem itemTop = menu.findItem(R.id.nav_top);
@@ -265,14 +263,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         item.setEnabled(false);
 
 
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
     //fonction pour l'init de l'envoi des requette
-    private void prepareRequette(){
+    private void prepareRequette() {
         this.compteurRequete = 1;
         this.pageActuel = 1;
         this.nombrePageTotal = 1;
@@ -294,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                             Film tmp = new Film(response.getJSONArray("results").get(i).toString());
 
-                            if(tmp.corespondToReq(paramForFilm)){//Si le film correspond a la requette demendé
+                            if (tmp.corespondToReq(paramForFilm)) {//Si le film correspond a la requette demendé
                                 listFilm.add(tmp);
                             }
                         }
@@ -320,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void addMovieToList(String listFilm){
+    private void addMovieToList(String listFilm) {
         ListView listOfTheFilm = (ListView) findViewById(R.id.listOfFilm);
     }
 
