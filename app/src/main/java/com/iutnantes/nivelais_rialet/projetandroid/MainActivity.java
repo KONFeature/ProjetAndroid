@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -321,6 +322,15 @@ public class MainActivity extends AppCompatActivity {
         FilmAdapter affichageFilm = new FilmAdapter(this.contextPourRequette, this.listFilm);
         ListView listOfTheFilm = (ListView) findViewById(R.id.listOfFilm);
         listOfTheFilm.setAdapter(affichageFilm);
+
+        listOfTheFilm.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Film tmp = (Film) parent.getAdapter().getItem(position);
+                Log.v(TAG, "Click sur un film : "+ tmp.getTitre());
+
+            }
+        });
     }
 
 }

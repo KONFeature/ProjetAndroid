@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import static java.util.Calendar.YEAR;
 
@@ -23,7 +24,7 @@ import static java.util.Calendar.YEAR;
  * Created by yoyob on 28/03/2017.
  */
     public class FilmAdapter extends ArrayAdapter<Film> {
-    private static final String TAG = "Main";
+    private static final String TAG = "FilmAdapter";
 
     public FilmAdapter(Context context, ArrayList<Film> films) {
             super(context, 0, films);
@@ -41,7 +42,8 @@ import static java.util.Calendar.YEAR;
             // Cherche les textview
             TextView vueTitre = (TextView) convertView.findViewById(R.id.titre);
             TextView vuePopu = (TextView) convertView.findViewById(R.id.popularite);
-            String popu = Double.toString(film.getPopularite()).substring(0,3)+"/10";
+            String[] popularite = Double.toString(film.getPopularite()).split(Pattern.quote("."));
+            String popu = popularite[0]+","+popularite[1].substring(0,2);
             TextView vueDate = (TextView) convertView.findViewById(R.id.date);
             // Ajout des donnée dans la vue
             vueTitre.setText(film.getTitre());
