@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@drawable/ic_menu_camera"
+            android:id="@+id/imageFilm"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/imageFilm"
+            android:shrinkColumns="*">
+
+            <TableRow>
+                <TextView
+                    android:id="@+id/titre"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:textSize="25dp"
+                    android:text="Titre"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:id="@+id/popularite"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textSize="20dp"
+                    android:text="Réalisateur"
+                    android:layout_marginRight="10dp"/>
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textSize="20dp"
+                    android:text="Date"
+                    android:gravity="right"/>
+            </TableRow>
+
+        </TableLayout>
+    </RelativeLayout>
+
+</LinearLayout>
