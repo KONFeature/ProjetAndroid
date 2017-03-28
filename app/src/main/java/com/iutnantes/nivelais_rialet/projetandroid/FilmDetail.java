@@ -1,7 +1,14 @@
 package com.iutnantes.nivelais_rialet.projetandroid;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,17 +24,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-import static android.R.attr.author;
 import static android.R.attr.id;
 
 /**
  * Created by Nivelais Quentin on 27/03/17.
  */
 
-public class FilmDetail {
+public class FilmDetail extends Activity {
     //Variable pour les logs
     private static final String TAG = "film_detail";
-
+    //Variable a recup du main
+    final String EXTRA_IDMOVIE = "0";
+    final String EXTRA_TITLEMOVIE = "movie_title";
+    //Variable de l'intent
+    public Intent intent;
     //Les attributs d'un film pour les detail affiché sur la page
     private int idFilm;
     private String title;
@@ -54,9 +64,13 @@ public class FilmDetail {
     private String baseReq;
     private Context contextPourRequette;
 
-    public FilmDetail(int filmId, Context context) {
+    public FilmDetail() {
         this.apiKey = "18ebf0d523ea611028cdb5cad22392f1";
-        this.contextPourRequette = context;
+    }
+
+    public FilmDetail(int filmId) {
+        this.apiKey = "18ebf0d523ea611028cdb5cad22392f1";
+        this.contextPourRequette = getApplicationContext();
         this.idFilm = id;
 
 
@@ -67,6 +81,39 @@ public class FilmDetail {
         this.executeRequeteDetail();
 
 
+    }
+
+    public void onCreate(Bundle savecInstanceState) {
+        super.onCreate(savecInstanceState);
+        setContentView(R.layout.movie_detail_vue);
+
+        //Init les parametre avec l'intent
+        intent = getIntent();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        TextView titileMovie = (TextView) findViewById(R.id.titleFilm);
+        if (intent != null) {
+            toolbar.setTitle(intent.getStringExtra(EXTRA_TITLEMOVIE));
+            titileMovie.setText(intent.getStringExtra(EXTRA_TITLEMOVIE));
+            this.title = intent.getStringExtra(EXTRA_TITLEMOVIE);
+            this.idFilm = Integer.parseInt("2");
+        } else {
+            finish();
+        }
+
+        //Init de la toolbar et fin de l'activité quand click sur le btn retour
+        Drawable iconPrecedant = (Drawable) getResources().getDrawable(R.drawable.movie_previous_page, getTheme());
+        toolbar.setNavigationIcon(iconPrecedant);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
     //Methode executant la requette pour avoir toute les information

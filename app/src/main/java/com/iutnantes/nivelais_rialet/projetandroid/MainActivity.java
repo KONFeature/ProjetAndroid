@@ -1,6 +1,7 @@
 package com.iutnantes.nivelais_rialet.projetandroid;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -34,11 +35,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     //Variable pour les logs
     private static final String TAG = "Main";
+
+    //Variable a transmettre a l'itnent
+    final String EXTRA_IDMOVIE = "0";
+    final String EXTRA_TITLEMOVIE = "movie_title";
 
     //Variable specifique pour le main activity
     private Toolbar toolbar;
@@ -323,11 +327,18 @@ public class MainActivity extends AppCompatActivity {
         ListView listOfTheFilm = (ListView) findViewById(R.id.listOfFilm);
         listOfTheFilm.setAdapter(affichageFilm);
 
+        //Quand on click sur un item de la liste de film, on passe sur la vue detaillé
         listOfTheFilm.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Film tmp = (Film) parent.getAdapter().getItem(position);
                 Log.v(TAG, "Click sur un film : "+ tmp.getTitre());
+
+                //Passage a l'autre vue
+                Intent intent = new Intent(MainActivity.this, FilmDetail.class);
+                intent.putExtra(EXTRA_IDMOVIE, tmp.getId());
+                intent.putExtra(EXTRA_TITLEMOVIE, tmp.getTitre());
+                startActivity(intent);
 
             }
         });

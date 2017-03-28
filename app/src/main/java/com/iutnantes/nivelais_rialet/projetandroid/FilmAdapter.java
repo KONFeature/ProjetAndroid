@@ -3,7 +3,6 @@ package com.iutnantes.nivelais_rialet.projetandroid;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.regex.Pattern;
-
-import static java.util.Calendar.YEAR;
 
 /**
  * Created by yoyob on 28/03/2017.
@@ -43,7 +40,7 @@ import static java.util.Calendar.YEAR;
             TextView vueTitre = (TextView) convertView.findViewById(R.id.titre);
             TextView vuePopu = (TextView) convertView.findViewById(R.id.popularite);
             String[] popularite = Double.toString(film.getPopularite()).split(Pattern.quote("."));
-            String popu = popularite[0]+","+popularite[1].substring(0,2);
+            String popu = popularite[0] + "," + popularite[1].substring(0, 1);
             TextView vueDate = (TextView) convertView.findViewById(R.id.date);
             // Ajout des donnée dans la vue
             vueTitre.setText(film.getTitre());
