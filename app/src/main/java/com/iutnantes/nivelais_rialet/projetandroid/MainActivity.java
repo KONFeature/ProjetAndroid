@@ -33,8 +33,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
     //Variable pour les logs
     private static final String TAG = "Main";
 
@@ -193,19 +194,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     itemTop.setEnabled(true);
                     itemSearch.setEnabled(true);
 
+                    //Affichachage cachage des elements
                     findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
                     findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
                     searchOption.setEnabled(false);
                     searchOption.setVisibility(View.GONE);
+
+                    //Chargement des films
+                    prepareRequette();
+                    baseReq = "https://api.themoviedb.org/3/movie/upcoming?api_key=";
+                    finalReq = baseReq + apiKey + "&include_adult=false";
+                    JSONObject paramDuFilm = new JSONObject();
+                    try {
+                        paramDuFilm.put("type", 1);
+                    } catch (JSONException e) {
+                        Log.v(TAG, "Erreur de création du JSON : " + e.toString());
+                    }
+                    paramForFilm = paramDuFilm.toString();
+                    Log.v(TAG, "Le JSON a parsé : " + paramDuFilm.toString());
+                    envoiRequette();
                 } else if (id == R.id.nav_top) {
                     toolbar.setTitle("Top movie");
                     itemSearch.setEnabled(true);
                     itemRecent.setEnabled(true);
 
+                    //Affichachage cachage des elements
                     findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
                     findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
                     searchOption.setEnabled(false);
                     searchOption.setVisibility(View.GONE);
+
+                    //Chargement des films
+                    prepareRequette();
+                    baseReq = "https://api.themoviedb.org/3/movie/top_rated?api_key=";
+                    finalReq = baseReq + apiKey + "&include_adult=false";
+                    JSONObject paramDuFilm = new JSONObject();
+                    try {
+                        paramDuFilm.put("type", 1);
+                    } catch (JSONException e) {
+                        Log.v(TAG, "Erreur de création du JSON : " + e.toString());
+                    }
+                    paramForFilm = paramDuFilm.toString();
+                    Log.v(TAG, "Le JSON a parsé : " + paramDuFilm.toString());
+                    envoiRequette();
                 }
 
                 //Désactive l'option selectionné
@@ -228,44 +259,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
-    }
-
-    //Quand on click sur un des item du pannel de gauche
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        //Recuperation de tout les autres item
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        Menu menu = navigationView.getMenu();
-        MenuItem itemSearch = menu.findItem(R.id.nav_search);
-        MenuItem itemTop = menu.findItem(R.id.nav_top);
-        MenuItem itemRecent = menu.findItem(R.id.nav_recent);
-
-        //Recuperation de l'id de l'item selectionné
-        int id = item.getItemId();
-
-        //Quand on a trouvé l'item, on change le titre puis active tout les autre item
-        if (id == R.id.nav_search) {
-            toolbar.setTitle("Search movie");
-            itemTop.setEnabled(true);
-            itemRecent.setEnabled(true);
-        } else if (id == R.id.nav_recent) {
-            toolbar.setTitle("Recent movie");
-            itemTop.setEnabled(true);
-            itemSearch.setEnabled(true);
-        } else if (id == R.id.nav_top) {
-            toolbar.setTitle("Top movie");
-            itemSearch.setEnabled(true);
-            itemRecent.setEnabled(true);
-        }
-
-        //Désactive l'option selectionné
-        item.setEnabled(false);
-
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     //methode pour l'init de l'envoi des requette
@@ -319,15 +312,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //Methode ajoutant la liste des films a la vue
     private void addMovieToList() {
+        ArrayList<Film> filmForScrollView = new ArrayList<Film>();
+        for(int i = 0; i<10; i++){
+            filmForScrollView.add(this.listFilm.get(i));
+        }
+
         Log.v(TAG, "Liste des films : " + this.listFilm.toString());
         //Creation de l'adapter
-        FilmAdapter affichageFilm = new FilmAdapter(this.contextPourRequette, this.listFilm);
+        FilmAdapter affichageFilm = new FilmAdapter(this.contextPourRequette, filmForScrollView);
         ListView listOfTheFilm = (ListView) findViewById(R.id.listOfFilm);
         listOfTheFilm.setAdapter(affichageFilm);
-
-        //Ajout des donnée a l'adapter
-        affichageFilm.clear();
-        affichageFilm.addAll(this.listFilm);
     }
 
 }

@@ -39,6 +39,12 @@ public class Film {
     private int nbrVote;
     private double popularite;
 
+    public Film(String titre, Date sortieDuFilm, double popularite) {
+        this.titre = titre;
+        this.sortieDuFilm = sortieDuFilm;
+        this.popularite = popularite;
+    }
+
     public Film(String gson) {
         try {
             JSONObject jsonFilm = new JSONObject(gson);
@@ -52,6 +58,7 @@ public class Film {
             this.id = (int) jsonFilm.get("id");
             this.nbrVote = (int) jsonFilm.get("vote_count");
             this.popularite = Double.parseDouble(jsonFilm.get("popularity").toString());
+            Log.v(TAG, "Popularite : " + jsonFilm.get("id"));
 
             //Envoi de la date
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -60,6 +67,7 @@ public class Film {
                 this.sortieDuFilm = dateFormat.parse(jsonFilm.get("release_date").toString());
             } catch (ParseException e) {
                 Log.v(TAG, "Erreur conversion date : " + e.toString());
+                this.sortieDuFilm = new Date();
             }
 
             JSONArray tmpGenreCconvert = new JSONArray(jsonFilm.get("genre_ids").toString());

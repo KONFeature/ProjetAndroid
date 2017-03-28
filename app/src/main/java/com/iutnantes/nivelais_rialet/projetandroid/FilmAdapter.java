@@ -3,6 +3,7 @@ package com.iutnantes.nivelais_rialet.projetandroid;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import static java.util.Calendar.YEAR;
  * Created by yoyob on 28/03/2017.
  */
     public class FilmAdapter extends ArrayAdapter<Film> {
+    private static final String TAG = "Main";
 
     public FilmAdapter(Context context, ArrayList<Film> films) {
             super(context, 0, films);
