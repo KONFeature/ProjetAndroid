@@ -278,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //methode pour l'envoi de la requette
     private void envoiRequette() {
-        //Init des variable de reconnaissance avec premiere requette (et init du compteur)
+        //Init de la request queue pour la requette
         RequestQueue queue = Volley.newRequestQueue(this.contextPourRequette);
 
         if (pageActuel <= nombrePageTotal && compteurRequete < this.maxReq) {
