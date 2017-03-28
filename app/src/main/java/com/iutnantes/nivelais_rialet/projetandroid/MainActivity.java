@@ -320,7 +320,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //Methode ajoutant la liste des films a la vue
     private void addMovieToList() {
         Log.v(TAG, "Liste des films : " + this.listFilm.toString());
+        FilmAdapter affichageFilm = new FilmAdapter(this.contextPourRequette, this.listFilm);
         ListView listOfTheFilm = (ListView) findViewById(R.id.listOfFilm);
+        listOfTheFilm.setAdapter(affichageFilm);
     }
 
 }
