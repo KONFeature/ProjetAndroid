@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private int nombrePageTotal;
     private int pageActuel;
     private int maxReq;
+    private int nbrResWanted;
     private String finalReq;
     private String paramForFilm;
     private ArrayList<Film> listFilm;
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 baseReq = "https://api.themoviedb.org/3/search/movie?api_key=";
                 finalReq = baseReq + apiKey + "&include_adult=false";
                 finalReq += "&query=" + titleEditText.getText().toString().replace(" ", "+");
+                nbrResWanted = 20;
                 //Ajout des parametre de recherche
                 JSONObject paramDuFilm = new JSONObject();
                 try {
@@ -201,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
                     searchOption.setVisibility(View.GONE);
 
                     //Chargement des films
+                    nbrResWanted = 20;
                     prepareRequette();
                     baseReq = "https://api.themoviedb.org/3/movie/upcoming?api_key=";
                     finalReq = baseReq + apiKey + "&include_adult=false";
@@ -226,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //Chargement des films
                     prepareRequette();
+                    nbrResWanted = 20;
                     baseReq = "https://api.themoviedb.org/3/movie/top_rated?api_key=";
                     finalReq = baseReq + apiKey + "&include_adult=false";
                     JSONObject paramDuFilm = new JSONObject();
@@ -274,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
         //Init de la request queue pour la requette
         RequestQueue queue = Volley.newRequestQueue(this.contextPourRequette);
 
-        if (pageActuel <= nombrePageTotal && compteurRequete < this.maxReq) {
+        if (pageActuel <= nombrePageTotal && compteurRequete < this.maxReq && this.listFilm.size() <= this.nbrResWanted) {
             JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, this.finalReq + "&page=" + pageActuel, null, new Response.Listener<JSONObject>() {
 
                 @Override
@@ -312,14 +316,9 @@ public class MainActivity extends AppCompatActivity {
 
     //Methode ajoutant la liste des films a la vue
     private void addMovieToList() {
-        ArrayList<Film> filmForScrollView = new ArrayList<Film>();
-        for(int i = 0; i<10; i++){
-            filmForScrollView.add(this.listFilm.get(i));
-        }
-
         Log.v(TAG, "Liste des films : " + this.listFilm.toString());
         //Creation de l'adapter
-        FilmAdapter affichageFilm = new FilmAdapter(this.contextPourRequette, filmForScrollView);
+        FilmAdapter affichageFilm = new FilmAdapter(this.contextPourRequette, this.listFilm);
         ListView listOfTheFilm = (ListView) findViewById(R.id.listOfFilm);
         listOfTheFilm.setAdapter(affichageFilm);
     }

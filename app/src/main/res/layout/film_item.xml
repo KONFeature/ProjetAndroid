@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-
-        <ImageView
-            android:id="@+id/imageFilm"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            android:src="@drawable/ic_menu_camera" />
+    <ImageView
+        android:id="@+id/imageFilm"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:contentDescription="Image du film"
+        android:src="@drawable/ic_menu_camera" />
 
         <TableLayout
             android:layout_width="match_parent"
@@ -28,29 +25,32 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Titre"
-                    android:textSize="25dp" />
+                    android:textSize="25sp" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/popularite"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"
                     android:text="Réalisateur"
-                    android:textSize="20dp" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="right"
+                    android:gravity="end"
                     android:text="Date"
-                    android:textSize="20dp" />
+                    android:textSize="20sp"
+                    tools:layout_editor_absoluteX="249dp" />
+
             </TableRow>
 
         </TableLayout>
-    </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>

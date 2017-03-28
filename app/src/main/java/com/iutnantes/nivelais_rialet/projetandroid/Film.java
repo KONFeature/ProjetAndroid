@@ -32,7 +32,6 @@ public class Film {
     private String synopsis;
     private String language;
     private String linkToImage;
-    private boolean videoExist;
     private Date sortieDuFilm;
     private int id;
     private int[] genreId;
@@ -51,14 +50,19 @@ public class Film {
 
             //Ajout des attribut au film
             this.titre = jsonFilm.get("title").toString();
-            this.linkToImage = jsonFilm.get("poster_path").toString();
+
+            if(jsonFilm.get("poster_path").toString() != "null"){
+                this.linkToImage = jsonFilm.get("poster_path").toString();
+            } else {
+                this.linkToImage = "none";
+                Log.v(TAG, "Aucune image : " + jsonFilm.get("poster_path").toString());
+            }
+
             this.synopsis = jsonFilm.get("overview").toString();
             this.language = jsonFilm.get("original_language").toString();
-            this.videoExist = (boolean) jsonFilm.get("video");
             this.id = (int) jsonFilm.get("id");
             this.nbrVote = (int) jsonFilm.get("vote_count");
             this.popularite = Double.parseDouble(jsonFilm.get("popularity").toString());
-            Log.v(TAG, "Popularite : " + jsonFilm.get("id"));
 
             //Envoi de la date
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -66,7 +70,7 @@ public class Film {
             try {
                 this.sortieDuFilm = dateFormat.parse(jsonFilm.get("release_date").toString());
             } catch (ParseException e) {
-                Log.v(TAG, "Erreur conversion date : " + e.toString());
+                Log.v(TAG, "Erreur conversion date, la date : "+jsonFilm.get("release_date").toString()+"\n -r Erreur : " + e.toString());
                 this.sortieDuFilm = new Date();
             }
 
@@ -140,10 +144,6 @@ public class Film {
         return language;
     }
 
-    public boolean isVideoExist() {
-        return videoExist;
-    }
-
     public int[] getGenreId() {
         return genreId;
     }
@@ -183,7 +183,6 @@ public class Film {
                 ", synopsis='" + synopsis + '\'' +
                 ", language='" + language + '\'' +
                 ", linkToImage='" + linkToImage + '\'' +
-                ", videoExist=" + videoExist +
                 ", sortieDuFilm=" + sortieDuFilm +
                 ", id=" + id +
                 ", genreId=" + Arrays.toString(genreId) +

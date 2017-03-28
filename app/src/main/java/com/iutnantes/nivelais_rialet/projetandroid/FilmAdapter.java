@@ -8,7 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,6 +50,13 @@ import static java.util.Calendar.YEAR;
             Calendar cal = Calendar.getInstance(Locale.FRANCE);
             cal.setTime(film.getSortieDuFilm());
             vueDate.setText(Integer.toString(cal.getWeekYear()));
+
+            //Si le film possede une image, on la charge
+            if(film.getLinkToImage() != "none"){
+                ImageView miniatureFilm = (ImageView) convertView.findViewById(R.id.imageFilm);
+                Picasso.with(this.getContext()).load("https://image.tmdb.org/t/p/w154"+film.getLinkToImage()).into(miniatureFilm);
+            }
+
 
             // Retourne en la vue
             return convertView;
