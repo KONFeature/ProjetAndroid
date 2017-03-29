@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main";
 
     //Variable a transmettre a l'itnent
-    final String EXTRA_IDMOVIE = "0";
+    final String EXTRA_IDMOVIE = "movie_id";
     final String EXTRA_TITLEMOVIE = "movie_title";
 
     //Variable specifique pour le main activity
@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Initialisation des variable de recherche
         final EditText titleEditText = (EditText) findViewById(R.id.titleOfTheMovie);
-        final EditText numberOfResultText = (EditText) findViewById(R.id.numberOfResult);
         final EditText ageMaxText = (EditText) findViewById(R.id.ageMax);
         final Spinner languageSelect = (Spinner) findViewById(R.id.originalLanguage);
         final SeekBar minimumPopularitySelectionner = (SeekBar) findViewById(R.id.popularityMin);
@@ -135,7 +134,11 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject paramDuFilm = new JSONObject();
                 try {
                     paramDuFilm.put("type", 0);
-                    paramDuFilm.put("ageMax", Integer.parseInt(ageMaxText.getText().toString()));
+                    if (ageMaxText.getText().toString().trim().length() > 0) {
+                        paramDuFilm.put("ageMax", Integer.parseInt(ageMaxText.getText().toString()));
+                    } else {
+                        paramDuFilm.put("ageMax", 0);
+                    }
                     paramDuFilm.put("minPopularity", valProgress);
                     paramDuFilm.put("language", languageSelect.getSelectedItem().toString());
                 } catch (JSONException e) {

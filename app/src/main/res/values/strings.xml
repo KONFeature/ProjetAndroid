@@ -19,7 +19,7 @@
     <string name="searchlayout_title_text">Title</string>
     <string name="searchlayout_title_edittext">Title</string>
     <string name="searchlayout_maxresult_text">Number of result</string>
-    <string name="searchlayout_maxage_text">Maximum age of the movie (0 = no limit)</string>
+    <string name="searchlayout_maxage_text">Maximum age of the movie (0 = no limit) (optionnal)</string>
     <string name="searchlayout_country_text">The original language of the movie</string>
     <string name="searchlayout_country_default_prompt">Choose a Language</string>
     <string-array name="searchlayout_country_choice">

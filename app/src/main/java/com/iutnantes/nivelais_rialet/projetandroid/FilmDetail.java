@@ -34,7 +34,7 @@ public class FilmDetail extends Activity {
     //Variable pour les logs
     private static final String TAG = "film_detail";
     //Variable a recup du main
-    final String EXTRA_IDMOVIE = "0";
+    final String EXTRA_IDMOVIE = "movie_id";
     final String EXTRA_TITLEMOVIE = "movie_title";
     //Variable de l'intent
     public Intent intent;
@@ -66,6 +66,8 @@ public class FilmDetail extends Activity {
 
     public FilmDetail() {
         this.apiKey = "18ebf0d523ea611028cdb5cad22392f1";
+
+        this.baseReq = "https://api.themoviedb.org/3/movie/";
     }
 
     public FilmDetail(int filmId) {
@@ -79,7 +81,6 @@ public class FilmDetail extends Activity {
         this.finalReq = this.baseReq + filmId + "?api_key" + this.apiKey;
         //Envoi de la premiere requette permettant d'avoir tout les detail d'un film
         this.executeRequeteDetail();
-
 
     }
 
@@ -95,7 +96,7 @@ public class FilmDetail extends Activity {
             toolbar.setTitle(intent.getStringExtra(EXTRA_TITLEMOVIE));
             titileMovie.setText(intent.getStringExtra(EXTRA_TITLEMOVIE));
             this.title = intent.getStringExtra(EXTRA_TITLEMOVIE);
-            this.idFilm = Integer.parseInt("2");
+            this.idFilm = intent.getIntExtra(EXTRA_IDMOVIE, 0);
         } else {
             finish();
         }
@@ -109,6 +110,10 @@ public class FilmDetail extends Activity {
                 finish();
             }
         });
+
+        //Init et lancement de la requette
+        this.finalReq = this.baseReq + this.idFilm + "?api_key=" + this.apiKey;
+        Log.v(TAG, "Final reqq : " + this.finalReq);
     }
 
     @Override
