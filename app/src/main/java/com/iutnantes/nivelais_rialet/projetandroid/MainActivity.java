@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,10 +17,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -44,10 +47,15 @@ public class MainActivity extends AppCompatActivity {
     final String EXTRA_IDMOVIE = "movie_id";
     final String EXTRA_TITLEMOVIE = "movie_title";
 
+    //Variable pour affichage du loading
+    private ProgressBar loadingSpinner;
+
     //Variable specifique pour le main activity
     private Toolbar toolbar;
     private FloatingActionButton searchOption;
     private double valProgress;
+    private ListView listOfTheFilm;
+    private int oldPosListView;
 
     //Variable specifique au requette
     private int compteurRequete;
@@ -77,6 +85,10 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         searchOption = (FloatingActionButton) findViewById(R.id.search_parameters);
+
+        //Init du chargement
+        this.loadingSpinner = (ProgressBar) findViewById(R.id.loadingListFilm);
+        loadingSpinner.setVisibility(View.GONE);
 
         //Initialisation des variable de recherche
         final EditText titleEditText = (EditText) findViewById(R.id.titleOfTheMovie);
@@ -115,41 +127,57 @@ public class MainActivity extends AppCompatActivity {
         Button launchingSearch = (Button) findViewById(R.id.launchSearch);
         launchingSearch.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //Action quand on appuis sur le bouton de recherche
-                Snackbar.make(v, "Search of " + titleEditText.getText().toString() + " progress ...", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Verification que l'utilisateur ai bien rentré un titre
+                final EditText titreMovieInput = (EditText) findViewById(R.id.titleOfTheMovie);
+                if (titreMovieInput.getText().length() > 0) {
+                    //On lance le spinner de chargement
+                    loadingSpinner.setVisibility(View.VISIBLE);
 
-                //Cachage du formulaire de recherche, affichage de la liste de resultat et du bouton
-                findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
-                findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
-                searchOption.setEnabled(true);
-                searchOption.setVisibility(View.VISIBLE);
+                    //On vide la liste de film
+                    listFilm = new ArrayList<Film>();
 
-                //Preparation de la requette :
-                baseReq = "https://api.themoviedb.org/3/search/movie?api_key=";
-                finalReq = baseReq + apiKey + "&include_adult=false";
-                finalReq += "&query=" + titleEditText.getText().toString().replace(" ", "+");
-                nbrResWanted = 20;
-                //Ajout des parametre de recherche
-                JSONObject paramDuFilm = new JSONObject();
-                try {
-                    paramDuFilm.put("type", 0);
-                    if (ageMaxText.getText().toString().trim().length() > 0) {
-                        paramDuFilm.put("ageMax", Integer.parseInt(ageMaxText.getText().toString()));
-                    } else {
-                        paramDuFilm.put("ageMax", 0);
+                    //Action quand on appuis sur le bouton de recherche
+                    Snackbar.make(v, "Search of " + titleEditText.getText().toString() + " progress ...", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+
+                    //Cachage du formulaire de recherche, affichage de la liste de resultat et du bouton
+                    findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
+                    findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
+                    searchOption.setEnabled(true);
+                    searchOption.setVisibility(View.VISIBLE);
+
+                    //Preparation de la requette :
+                    baseReq = "https://api.themoviedb.org/3/search/movie?api_key=";
+                    finalReq = baseReq + apiKey + "&include_adult=false";
+                    finalReq += "&query=" + titleEditText.getText().toString().replace(" ", "+");
+                    nbrResWanted = 20;
+                    //Ajout des parametre de recherche
+                    JSONObject paramDuFilm = new JSONObject();
+                    try {
+                        paramDuFilm.put("type", 0);
+                        if (ageMaxText.getText().toString().trim().length() > 0) {
+                            paramDuFilm.put("ageMax", Integer.parseInt(ageMaxText.getText().toString()));
+                        } else {
+                            paramDuFilm.put("ageMax", 0);
+                        }
+                        paramDuFilm.put("minPopularity", valProgress);
+                        paramDuFilm.put("language", languageSelect.getSelectedItem().toString());
+                    } catch (JSONException e) {
+                        Log.v(TAG, "Erreur de création du JSON : " + e.toString());
                     }
-                    paramDuFilm.put("minPopularity", valProgress);
-                    paramDuFilm.put("language", languageSelect.getSelectedItem().toString());
-                } catch (JSONException e) {
-                    Log.v(TAG, "Erreur de création du JSON : " + e.toString());
+
+                    paramForFilm = paramDuFilm.toString();
+                    Log.v(TAG, "Le JSON a parsé : " + paramDuFilm.toString());
+
+                    prepareRequette();
+                    envoiRequette();
+                } else {
+                    //sinon message d'erreur
+                    TextInputLayout tmp = (TextInputLayout) findViewById(R.id.input_layout_title);
+                    tmp.setError("Please enter a title");
                 }
 
-                paramForFilm = paramDuFilm.toString();
-                Log.v(TAG, "Le JSON a parsé : " + paramDuFilm.toString());
 
-                prepareRequette();
-                envoiRequette();
 
             }
         });
@@ -194,15 +222,28 @@ public class MainActivity extends AppCompatActivity {
                     itemTop.setEnabled(true);
                     itemRecent.setEnabled(true);
 
+                    //On vide la liste de film
+                    listFilm = new ArrayList<Film>();
+
+                    //On prepare la requette
+                    prepareRequette();
+
                     //Affichage et masquage des bon formulaire et du bouton
                     findViewById(R.id.searchFormulaire).setVisibility(View.VISIBLE);
                     findViewById(R.id.affichageFilm).setVisibility(View.GONE);
                     searchOption.setEnabled(false);
                     searchOption.setVisibility(View.GONE);
                 } else if (id == R.id.nav_recent) {
+                    //Si l'on charge les films les plus recent
                     toolbar.setTitle("Recent movie");
                     itemTop.setEnabled(true);
                     itemSearch.setEnabled(true);
+
+                    //On lance le spinner de chargement
+                    loadingSpinner.setVisibility(View.VISIBLE);
+
+                    //On vide la liste de film
+                    listFilm = new ArrayList<Film>();
 
                     //Affichachage cachage des elements
                     findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
@@ -225,9 +266,16 @@ public class MainActivity extends AppCompatActivity {
                     Log.v(TAG, "Le JSON a parsé : " + paramDuFilm.toString());
                     envoiRequette();
                 } else if (id == R.id.nav_top) {
+                    //Si l'on charge les meilleur films
                     toolbar.setTitle("Top movie");
                     itemSearch.setEnabled(true);
                     itemRecent.setEnabled(true);
+
+                    //On lance le spinner de chargement
+                    loadingSpinner.setVisibility(View.VISIBLE);
+
+                    //On vide la liste de film
+                    listFilm = new ArrayList<Film>();
 
                     //Affichachage cachage des elements
                     findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
@@ -269,12 +317,42 @@ public class MainActivity extends AppCompatActivity {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            //Si on est sur l'affiche de la liste des films, on revien sur l'interface de recherche
+            if (findViewById(R.id.affichageFilm).getVisibility() == View.VISIBLE) {
+                findViewById(R.id.searchFormulaire).setVisibility(View.VISIBLE);
+                findViewById(R.id.affichageFilm).setVisibility(View.GONE);
+                searchOption.setEnabled(true);
+                searchOption.setVisibility(View.VISIBLE);
+
+                //On vide la liste des films
+                this.listFilm = new ArrayList<Film>();
+
+                //On reset les requette
+                this.prepareRequette();
+
+                //On reset la navigation view
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                Menu menu = navigationView.getMenu();
+                MenuItem itemSearch = menu.findItem(R.id.nav_search);
+                MenuItem itemTop = menu.findItem(R.id.nav_top);
+                MenuItem itemRecent = menu.findItem(R.id.nav_recent);
+                itemTop.setEnabled(true);
+                itemRecent.setEnabled(true);
+                itemSearch.setEnabled(false);
+                itemSearch.setChecked(true);
+
+                //On remet le titre
+                toolbar.setTitle("Search movie");
+            } else {
+                //Sinon on effectue l'action par default du retour
+                super.onBackPressed();
+            }
         }
     }
 
     //methode pour l'init de l'envoi des requette
     private void prepareRequette() {
+        this.oldPosListView = 0;
         this.compteurRequete = 1;
         this.pageActuel = 1;
         this.nombrePageTotal = 1;
@@ -297,7 +375,16 @@ public class MainActivity extends AppCompatActivity {
                             Film tmp = new Film(response.getJSONArray("results").get(i).toString());
 
                             if (tmp.corespondToReq(paramForFilm)) {//Si le film correspond a la requette demendé
-                                listFilm.add(tmp);
+                                //Si le film n'est pas deja dans la liste des film
+                                boolean dejaDansListe = false;
+                                for (int j = 0; j < listFilm.size(); j++) {
+                                    if (listFilm.get(j).equals(tmp)) {
+                                        dejaDansListe = true;
+                                    }
+                                }
+                                if (!dejaDansListe) {
+                                    listFilm.add(tmp);
+                                }
                             }
                         }
                         nombrePageTotal = (int) response.get("total_pages");
@@ -318,17 +405,29 @@ public class MainActivity extends AppCompatActivity {
             queue.add(jsObjRequest);
         } else {
             this.addMovieToList();
-            prepareRequette();
+            listOfTheFilm.setSelection(oldPosListView);
+            this.compteurRequete = 1;
         }
     }
 
     //Methode ajoutant la liste des films a la vue
     private void addMovieToList() {
-        Log.v(TAG, "Liste des films : " + this.listFilm.toString());
+        Log.v(TAG, "Affichage film : " + this.listFilm.toString());
+
+
         //Creation de l'adapter
         FilmAdapter affichageFilm = new FilmAdapter(this.contextPourRequette, this.listFilm);
-        ListView listOfTheFilm = (ListView) findViewById(R.id.listOfFilm);
+        listOfTheFilm = (ListView) findViewById(R.id.listOfFilm);
         listOfTheFilm.setAdapter(affichageFilm);
+
+        //Si on ne trouve aucun film on affiche une snackbar
+        if (this.listFilm.size() <= 0) {
+            Snackbar.make(findViewById(R.id.affichageFilm), "No result for this search sorry.", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
+
+        //On stop le spinner
+        loadingSpinner.setVisibility(View.GONE);
 
         //Quand on click sur un item de la liste de film, on passe sur la vue detaillé
         listOfTheFilm.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -342,7 +441,29 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(EXTRA_IDMOVIE, tmp.getId());
                 intent.putExtra(EXTRA_TITLEMOVIE, tmp.getTitre());
                 startActivity(intent);
+            }
+        });
 
+        //Listener de l'atteinte du bas de la listview (pour chargé de nouveaux film)
+        listOfTheFilm.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                //Definition du dernier item visible de la liste
+                final int lastItem = firstVisibleItem + visibleItemCount;
+
+                //Si le dernier item est egal au total des item on recharge des films
+                if (lastItem == totalItemCount && listFilm.size() > 0) {
+                    //On recupere la position avant l'ajout des item
+                    oldPosListView = firstVisibleItem;
+                    Log.v(TAG, "Ancienne position : " + oldPosListView);
+                    nbrResWanted += 20;
+                    envoiRequette();
+                }
             }
         });
     }

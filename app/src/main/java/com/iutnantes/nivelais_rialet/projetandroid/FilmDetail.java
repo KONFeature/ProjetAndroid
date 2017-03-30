@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -16,15 +18,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-
-import static android.R.attr.id;
 
 /**
  * Created by Nivelais Quentin on 27/03/17.
@@ -38,6 +42,8 @@ public class FilmDetail extends Activity {
     final String EXTRA_TITLEMOVIE = "movie_title";
     //Variable de l'intent
     public Intent intent;
+    //Variable pour affichage du loading
+    private ProgressBar loadingSpinner;
     //Les attributs d'un film pour les detail affiché sur la page
     private int idFilm;
     private String title;
@@ -47,7 +53,6 @@ public class FilmDetail extends Activity {
     private String linkToPhoto;
     private boolean videoExist;
     private String linkToVideo;
-    private int[] idGenre;
     private String genreList;
     private int nbrVote;
     private double popularite;
@@ -66,22 +71,7 @@ public class FilmDetail extends Activity {
 
     public FilmDetail() {
         this.apiKey = "18ebf0d523ea611028cdb5cad22392f1";
-
         this.baseReq = "https://api.themoviedb.org/3/movie/";
-    }
-
-    public FilmDetail(int filmId) {
-        this.apiKey = "18ebf0d523ea611028cdb5cad22392f1";
-        this.contextPourRequette = getApplicationContext();
-        this.idFilm = id;
-
-
-        //Preparation des variable avant l'envoi de la premiere requette
-        this.baseReq = "https://api.themoviedb.org/3/movie/";
-        this.finalReq = this.baseReq + filmId + "?api_key" + this.apiKey;
-        //Envoi de la premiere requette permettant d'avoir tout les detail d'un film
-        this.executeRequeteDetail();
-
     }
 
     public void onCreate(Bundle savecInstanceState) {
@@ -97,9 +87,16 @@ public class FilmDetail extends Activity {
             titileMovie.setText(intent.getStringExtra(EXTRA_TITLEMOVIE));
             this.title = intent.getStringExtra(EXTRA_TITLEMOVIE);
             this.idFilm = intent.getIntExtra(EXTRA_IDMOVIE, 0);
+
+            //Init de l'intent
+            this.contextPourRequette = getApplicationContext();
         } else {
             finish();
         }
+
+        //Init du loading
+        loadingSpinner = (ProgressBar) findViewById(R.id.loadingFilm);
+        loadingSpinner.setVisibility(View.VISIBLE);
 
         //Init de la toolbar et fin de l'activité quand click sur le btn retour
         Drawable iconPrecedant = (Drawable) getResources().getDrawable(R.drawable.movie_previous_page, getTheme());
@@ -113,6 +110,7 @@ public class FilmDetail extends Activity {
 
         //Init et lancement de la requette
         this.finalReq = this.baseReq + this.idFilm + "?api_key=" + this.apiKey;
+        this.executeRequeteDetail();
         Log.v(TAG, "Final reqq : " + this.finalReq);
     }
 
@@ -186,10 +184,80 @@ public class FilmDetail extends Activity {
             //Parse du json en film detail
             JSONObject jsonFilm = new JSONObject(json);
             this.title = (String) jsonFilm.get("title");
-            this.synopsis = (String) jsonFilm.get("overview");
-            this.popularite = Double.parseDouble(jsonFilm.get("popularity").toString());
 
-            //Affichage de l'interface principal
+            if (jsonFilm.get("overview").toString() == "null") {
+                this.synopsis = "No synopsis found";
+            } else {
+                this.synopsis = (String) jsonFilm.get("overview").toString();
+            }
+
+            if (jsonFilm.get("vote_average").toString() == "null") {
+                this.popularite = 0.0;
+                this.nbrVote = 0;
+            } else {
+                this.popularite = Double.parseDouble(jsonFilm.get("vote_average").toString());
+                this.nbrVote = Integer.parseInt(jsonFilm.get("vote_count").toString());
+            }
+
+            if (jsonFilm.get("backdrop_path").toString() == "null") {
+                this.photoExist = false;
+                this.linkToPhoto = "";
+            } else {
+                this.photoExist = true;
+                this.linkToPhoto = jsonFilm.get("backdrop_path").toString();
+            }
+
+            if (jsonFilm.get("genres").toString() == "null") {
+                this.genreList = "No genre found";
+            } else {
+                JSONArray genresList = (JSONArray) jsonFilm.get("genres");
+                this.genreList = "";
+                for (int i = 0; i < genresList.length(); i++) {
+                    JSONObject tmp = new JSONObject((String) genresList.get(i).toString());
+                    this.genreList += tmp.get("name").toString() + ", ";
+                }
+            }
+
+            this.language = jsonFilm.get("original_language").toString();
+
+            //Recuperation de la date
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                this.sortieDuFilm = dateFormat.parse(jsonFilm.get("release_date").toString());
+            } catch (ParseException e) {
+                Log.v(TAG, "Erreur conversion date, la date : " + jsonFilm.get("release_date").toString() + "\n -r Erreur : " + e.toString());
+                this.sortieDuFilm = new Date();
+            }
+
+            //Affichage des valeur dans l'interface :
+            TextView synopsisText = (TextView) findViewById(R.id.synopsisMovie);
+            synopsisText.setText("Synopsis : \n" + this.synopsis);
+
+            TextView popText = (TextView) findViewById(R.id.popularityFilm);
+            popText.setText("Popularity : " + Double.toString(this.popularite));
+
+            TextView nbrVoteText = (TextView) findViewById(R.id.nbrVoteMovie);
+            nbrVoteText.setText("Number of vote : " + Integer.toString(this.nbrVote));
+
+            TextView yearMovieText = (TextView) findViewById(R.id.releaseYearMovie);
+            SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+            yearMovieText.setText("Release year : " + yearFormat.format(this.sortieDuFilm));
+
+            TextView languageText = (TextView) findViewById(R.id.languageMovie);
+            languageText.setText("Original language : " + this.language);
+
+            if (this.photoExist) {
+                ImageView posterFilm = (ImageView) findViewById(R.id.afficheFilm);
+                Picasso.with(this.contextPourRequette).load("https://image.tmdb.org/t/p/original" + this.linkToPhoto).into(posterFilm);
+            }
+
+            TextView genreText = (TextView) findViewById(R.id.genreMovie);
+            genreText.setText("Genres : " + this.genreList);
+
+            //Apres le chargement de la page on fait disparaitre le loading
+            loadingSpinner.setVisibility(View.GONE);
+
+
 
             //Init des variable pour la requette des recommendation de films
             this.compteurRequete = 1;
@@ -197,7 +265,7 @@ public class FilmDetail extends Activity {
             this.pageActuel = 1;
             this.nombrePageTotal = 1;
             this.finalReq = this.baseReq+this.idFilm+"/recommendations?api_key" + this.apiKey;
-            this.executeRequeteRecommendation();
+//            this.executeRequeteRecommendation();
 
             //On dit qu'on a reussis la construction du film
             res = true;
@@ -229,7 +297,6 @@ public class FilmDetail extends Activity {
                 ", linkToPhoto='" + linkToPhoto + '\'' +
                 ", videoExist=" + videoExist +
                 ", linkToVideo='" + linkToVideo + '\'' +
-                ", idGenre=" + Arrays.toString(idGenre) +
                 ", genreList='" + genreList + '\'' +
                 ", nbrVote=" + nbrVote +
                 ", popularite=" + popularite +

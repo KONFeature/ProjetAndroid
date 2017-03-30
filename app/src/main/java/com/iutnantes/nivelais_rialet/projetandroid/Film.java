@@ -62,11 +62,10 @@ public class Film {
             this.language = jsonFilm.get("original_language").toString();
             this.id = (int) jsonFilm.get("id");
             this.nbrVote = (int) jsonFilm.get("vote_count");
-            this.popularite = Double.parseDouble(jsonFilm.get("popularity").toString());
+            this.popularite = Double.parseDouble(jsonFilm.get("vote_average").toString());
 
-            //Envoi de la date
+            //Recuperation de la date
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = new java.util.Date();
             try {
                 this.sortieDuFilm = dateFormat.parse(jsonFilm.get("release_date").toString());
             } catch (ParseException e) {
@@ -92,6 +91,46 @@ public class Film {
         return cal;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Film)) return false;
+
+        Film film = (Film) o;
+
+        if (id != film.id) return false;
+        if (nbrVote != film.nbrVote) return false;
+        if (Double.compare(film.popularite, popularite) != 0) return false;
+        if (!titre.equals(film.titre)) return false;
+        if (synopsis != null ? !synopsis.equals(film.synopsis) : film.synopsis != null)
+            return false;
+        if (language != null ? !language.equals(film.language) : film.language != null)
+            return false;
+        if (linkToImage != null ? !linkToImage.equals(film.linkToImage) : film.linkToImage != null)
+            return false;
+        if (sortieDuFilm != null ? !sortieDuFilm.equals(film.sortieDuFilm) : film.sortieDuFilm != null)
+            return false;
+        return Arrays.equals(genreId, film.genreId);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = titre.hashCode();
+        result = 31 * result + (synopsis != null ? synopsis.hashCode() : 0);
+        result = 31 * result + (language != null ? language.hashCode() : 0);
+        result = 31 * result + (linkToImage != null ? linkToImage.hashCode() : 0);
+        result = 31 * result + (sortieDuFilm != null ? sortieDuFilm.hashCode() : 0);
+        result = 31 * result + id;
+        result = 31 * result + Arrays.hashCode(genreId);
+        result = 31 * result + nbrVote;
+        temp = Double.doubleToLongBits(popularite);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
     public boolean corespondToReq(String json) {
         boolean res = false; //Variable de retour
         try {
@@ -103,10 +142,11 @@ public class Film {
                 if (this.popularite > Double.parseDouble(toVerif.get("minPopularity").toString())) { //Si la popularité minimum est atteinte
                     //Verification de la langue et ajout au attribut
                     if (!"all".toLowerCase().trim().equals(toVerif.get("language").toString().toLowerCase().trim())) {
-                        if (toVerif.get("language") == this.language) {
+                        if (toVerif.get("language").toString().toLowerCase().trim().equals(this.language.toLowerCase().trim())) {
                             res = true;
                             return res;
                         } else {
+                            Log.v(TAG, "Langue correspond pas : " + toVerif.get("language").toString() + " vs " + this.language);
                             res = false;
                             return res;
                         }
