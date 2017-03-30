@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -257,14 +259,24 @@ public class FilmDetail extends Activity {
             //Apres le chargement de la page on fait disparaitre le loading
             loadingSpinner.setVisibility(View.GONE);
 
+            //Mais on va chargé les video youtube du film
+            //Definition de la recycler view
+            RecyclerView listVideoFilm = (RecyclerView) findViewById(R.id.videoCorrespondMovie);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+            listVideoFilm.setLayoutManager(layoutManager);
+
+
+            //Puis on charge les film recommendé
+
 
 
             //Init des variable pour la requette des recommendation de films
-            this.compteurRequete = 1;
-            this.maxReq = 3; //3 requette suffise pour affiché une grosse list ede recommendation
-            this.pageActuel = 1;
-            this.nombrePageTotal = 1;
-            this.finalReq = this.baseReq+this.idFilm+"/recommendations?api_key" + this.apiKey;
+
+//            this.compteurRequete = 1;
+//            this.maxReq = 3; //3 requette suffise pour affiché une grosse list ede recommendation
+//            this.pageActuel = 1;
+//            this.nombrePageTotal = 1;
+//            this.finalReq = this.baseReq+this.idFilm+"/recommendations?api_key" + this.apiKey;
 //            this.executeRequeteRecommendation();
 
             //On dit qu'on a reussis la construction du film

@@ -12,8 +12,9 @@
         <ImageView
             android:id="@+id/imageFilm"
             android:layout_width="75dp"
-            android:layout_height="0dp"
+            android:layout_height="75dp"
             android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
             android:layout_marginTop="0dp"
             android:layout_weight="1"
             android:contentDescription="Image du film"
@@ -21,54 +22,50 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/ic_menu_gallery" />
 
-        <TableLayout
-            android:id="@+id/tableLayout"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/titre"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
+            android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
-            android:shrinkColumns="*"
+            android:text="Title"
+            android:textColor="@color/DefaultColor"
+            android:textSize="20sp"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toRightOf="@+id/imageFilm"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/titre"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Titre"
-                    android:textColor="@color/DefaultColor"
-                    android:textSize="20sp" />
-            </TableRow>
-        </TableLayout>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/popularite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="75dp"
-            android:layout_marginStart="75dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="0dp"
             android:text="popularite"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tableLayout" />
+            app:layout_constraintLeft_toRightOf="@+id/imageFilm"
+            app:layout_constraintTop_toBottomOf="@+id/titre"
+            app:layout_constraintVertical_bias="1.0" />
 
         <TextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
             android:gravity="end"
             android:text="Date"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/titre" />
 
     </android.support.constraint.ConstraintLayout>
 
