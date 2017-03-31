@@ -66,6 +66,7 @@ public class FilmDetail extends Activity {
     private int nombrePageTotal;
     private int pageActuel;
     private int maxReq;
+    private int nbrResWanted;
     private String finalReq;
     private String apiKey;
     private String baseReq;
@@ -139,44 +140,6 @@ public class FilmDetail extends Activity {
             }
         });
         queue.add(jsObjRequest);
-    }
-
-    //Methode executant la requette pour avoir les recommendation d'un film
-    private void executeRequeteRecommendation() {
-        //Init de la request queue pour la requette
-        RequestQueue queue = Volley.newRequestQueue(this.contextPourRequette);
-
-        if (pageActuel <= nombrePageTotal && compteurRequete < this.maxReq) {
-            JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, this.finalReq + "&page=" + pageActuel, null, new Response.Listener<JSONObject>() {
-
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        for (int i = 0; i < response.getJSONArray("results").length(); i++) {
-
-                            Film tmp = new Film(response.getJSONArray("results").get(i).toString());
-
-                            listFilmRecommande.add(tmp);
-                        }
-                        nombrePageTotal = (int) response.get("total_pages");
-                        pageActuel++;
-                        compteurRequete++;
-                        executeRequeteRecommendation();
-                    } catch (JSONException e) {
-                        Log.v(TAG, "Erreur recuperation json : " + e.toString());
-                    }
-                }
-            }, new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.v(TAG, "Erreur lors de la requette : " + error.toString());
-                }
-            });
-            queue.add(jsObjRequest);
-        } else {
-            this.afficherRecommendation();
-        }
     }
 
     //Methode permettant de convertir le resultat de la requette en film
@@ -267,17 +230,7 @@ public class FilmDetail extends Activity {
 
 
             //Puis on charge les film recommendé
-
-
-
-            //Init des variable pour la requette des recommendation de films
-
-//            this.compteurRequete = 1;
-//            this.maxReq = 3; //3 requette suffise pour affiché une grosse list ede recommendation
-//            this.pageActuel = 1;
-//            this.nombrePageTotal = 1;
-//            this.finalReq = this.baseReq+this.idFilm+"/recommendations?api_key" + this.apiKey;
-//            this.executeRequeteRecommendation();
+            this.afficherRecommendation();
 
             //On dit qu'on a reussis la construction du film
             res = true;
@@ -288,14 +241,72 @@ public class FilmDetail extends Activity {
         return res;
     }
 
-    //Methode affichant tout les attribut principaux sur l'interface
-    private void affichageInterface() {
-
-    }
-
     //Methode affichant la liste des film recommandé
     public void afficherRecommendation(){
+        //On va charger les recommendations
+        this.compteurRequete = 1;
+        this.maxReq = 3; //3 requette suffise pour affiché une grosse list ede recommendation
+        this.pageActuel = 1;
+        this.nombrePageTotal = 1;
+        this.nbrResWanted = 20;
+        this.finalReq = this.baseReq + this.idFilm + "/recommendations?api_key=" + this.apiKey;
+        this.listFilmRecommande = new ArrayList<Film>();
+        this.executeRequeteRecommendation();
 
+
+        RecyclerView listMovieRecommended = (RecyclerView) findViewById(R.id.recommendedMovie);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        listMovieRecommended.setLayoutManager(layoutManager);
+        RecommendedMovieAdapter recommendedAdapter = new RecommendedMovieAdapter(getApplicationContext(), this.listFilmRecommande);
+        listMovieRecommended.setAdapter(recommendedAdapter);
+    }
+
+    //Methode executant la requette pour avoir les recommendation d'un film
+    private void executeRequeteRecommendation() {
+        //Init de la request queue pour la requette
+        RequestQueue queue = Volley.newRequestQueue(this.contextPourRequette);
+
+        if (pageActuel <= nombrePageTotal && compteurRequete < this.maxReq && this.listFilmRecommande.size() <= this.nbrResWanted) {
+            JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, this.finalReq + "&page=" + pageActuel, null, new Response.Listener<JSONObject>() {
+
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        for (int i = 0; i < response.getJSONArray("results").length(); i++) {
+
+                            Film tmp = new Film(response.getJSONArray("results").get(i).toString());
+
+                            //Si le film n'est pas deja dans la liste des film
+                            boolean dejaDansListe = false;
+                            for (int j = 0; j < listFilmRecommande.size(); j++) {
+                                if (listFilmRecommande.get(j).equals(tmp)) {
+                                    dejaDansListe = true;
+                                }
+                            }
+                            if (!dejaDansListe) {
+                                listFilmRecommande.add(tmp);
+                            }
+                        }
+                        nombrePageTotal = (int) response.get("total_pages");
+                        pageActuel++;
+                        compteurRequete++;
+                        executeRequeteRecommendation();
+                    } catch (JSONException e) {
+                        Log.v(TAG, "Erreur recuperation json : " + e.toString());
+                    }
+                }
+            }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.v(TAG, "Erreur lors de la requette : " + error.toString());
+                }
+            });
+            queue.add(jsObjRequest);
+        } else {
+            Log.v(TAG, "Liste des film recommandé : " + listFilmRecommande.toString());
+            this.compteurRequete = 1;
+        }
     }
 
     @Override

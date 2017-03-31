@@ -1,14 +1,12 @@
 package com.iutnantes.nivelais_rialet.projetandroid;
 
 import android.content.Context;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -18,38 +16,52 @@ import java.util.ArrayList;
  * Created by Nivelais Quentin on 30/03/2017.
  */
 
-public class RecommendedMovieAdapter extends ArrayAdapter<Film> {
+public class RecommendedMovieAdapter extends RecyclerView.Adapter<RecommendedMovieAdapter.MyViewHolder> {
     private static final String TAG = "MovieRecommendedAdapter";
 
-    public RecommendedMovieAdapter(Context context, ArrayList<Film> films) {
-        super(context, 0, films);
+    private LayoutInflater inflater;
+    private Context context;
+    private ArrayList<Film> listFilm;
+
+    public RecommendedMovieAdapter(Context context, ArrayList<Film> listFilm) {
+        inflater = LayoutInflater.from(context);
+        this.context = context;
+        this.listFilm = listFilm;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        // Recupere l'item en fonction de sa position
-        Film film = getItem(position);
-        // Verifie si la vue est reutilisé ou non
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.film_filmdetail_item, parent, false);
-        }
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.film_filmdetail_item, parent, false);
+        MyViewHolder holder = new MyViewHolder(view);
+        return holder;
+    }
 
-        //Chargement de l'image button et du textView
-        ImageButton image = (ImageButton) convertView.findViewById(R.id.movieDetail);
-        TextView titre = (TextView) convertView.findViewById(R.id.titleOfMovie);
+    @Override
+    public void onBindViewHolder(MyViewHolder holder, int position) {
 
-        //Si le film possede une image, on la charge
-        if (film.getLinkToImage() != "none") {
-            Picasso.with(this.getContext()).load("https://image.tmdb.org/t/p/w154" + film.getLinkToImage()).into(image);
+        if (listFilm.get(position).getLinkToImage() != "none") {
+            Picasso.with(this.context).load("https://image.tmdb.org/t/p/w154" + listFilm.get(position).getLinkToImage()).into(holder.imageButton);
         } else {
             //sinon on affiche le titre du film
-            image.setVisibility(View.GONE);
-            titre.setVisibility(View.VISIBLE);
-            titre.setText(film.getTitre());
+            holder.imageButton.setVisibility(View.GONE);
+            holder.withoutImageBtn.setVisibility(View.VISIBLE);
+            holder.withoutImageBtn.setText(listFilm.get(position).getTitre());
         }
+    }
 
-        // Retourne en la vue
-        return convertView;
+    @Override
+    public int getItemCount() {
+        return this.listFilm.size();
+    }
+
+    class MyViewHolder extends RecyclerView.ViewHolder {
+        Button withoutImageBtn;
+        ImageButton imageButton;
+
+        public MyViewHolder(View itemView) {
+            super(itemView);
+            withoutImageBtn = (Button) itemView.findViewById(R.id.titleOfMovie);
+            imageButton = (ImageButton) itemView.findViewById(R.id.movieDetail);
+        }
     }
 }

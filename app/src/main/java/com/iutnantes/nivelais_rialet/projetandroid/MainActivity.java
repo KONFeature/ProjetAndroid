@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private String apiKey;
     private String baseReq;
     private Context contextPourRequette;
+    private boolean waitTheEnd = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -404,6 +405,7 @@ public class MainActivity extends AppCompatActivity {
             });
             queue.add(jsObjRequest);
         } else {
+            waitTheEnd = false;
             this.addMovieToList();
             listOfTheFilm.setSelection(oldPosListView);
             this.compteurRequete = 1;
@@ -412,9 +414,6 @@ public class MainActivity extends AppCompatActivity {
 
     //Methode ajoutant la liste des films a la vue
     private void addMovieToList() {
-        Log.v(TAG, "Affichage film : " + this.listFilm.toString());
-
-
         //Creation de l'adapter
         FilmAdapter affichageFilm = new FilmAdapter(this.contextPourRequette, this.listFilm);
         listOfTheFilm = (ListView) findViewById(R.id.listOfFilm);
@@ -461,7 +460,10 @@ public class MainActivity extends AppCompatActivity {
                     //On recupere la position avant l'ajout des item
                     oldPosListView = firstVisibleItem;
                     Log.v(TAG, "Ancienne position : " + oldPosListView);
-                    nbrResWanted += 20;
+                    if (!waitTheEnd) {
+                        nbrResWanted += 20;
+                    }
+                    waitTheEnd = true;
                     envoiRequette();
                 }
             }
