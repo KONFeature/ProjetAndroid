@@ -137,10 +137,6 @@ public class MainActivity extends AppCompatActivity {
                     //On vide la liste de film
                     listFilm = new ArrayList<Film>();
 
-                    //Action quand on appuis sur le bouton de recherche
-                    Snackbar.make(v, "Search of " + titleEditText.getText().toString() + " progress ...", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-
                     //Cachage du formulaire de recherche, affichage de la liste de resultat et du bouton
                     findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
                     findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
@@ -187,8 +183,6 @@ public class MainActivity extends AppCompatActivity {
         searchOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Back to the search pannel", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 findViewById(R.id.searchFormulaire).setVisibility(View.VISIBLE);
                 findViewById(R.id.affichageFilm).setVisibility(View.GONE);
                 searchOption.setVisibility(View.GONE);
@@ -455,8 +449,8 @@ public class MainActivity extends AppCompatActivity {
                 //Definition du dernier item visible de la liste
                 final int lastItem = firstVisibleItem + visibleItemCount;
 
-                //Si le dernier item est egal au total des item on recharge des films
-                if (lastItem == totalItemCount && listFilm.size() > 0) {
+                //Si le dernier item est egal au total des item on recharge des films et si on affiche plus d'item que la page peut en contenir
+                if (lastItem == totalItemCount && listFilm.size() > 0 && lastItem > visibleItemCount) {
                     //On recupere la position avant l'ajout des item
                     oldPosListView = firstVisibleItem;
                     Log.v(TAG, "Ancienne position : " + oldPosListView);

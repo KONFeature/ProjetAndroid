@@ -44,6 +44,9 @@ public class FilmDetail extends Activity {
     final String EXTRA_TITLEMOVIE = "movie_title";
     //Variable de l'intent
     public Intent intent;
+    //Les var pour le recycler view des video
+    RecyclerView videoView;
+    VideoAdapter videoAdapter;
     //Variable pour affichage du loading
     private ProgressBar loadingSpinner;
     //Les attributs d'un film pour les detail affiché sur la page
@@ -53,20 +56,12 @@ public class FilmDetail extends Activity {
     private String language;
     private boolean photoExist;
     private String linkToPhoto;
-    private boolean videoExist;
-    private String linkToVideo;
     private String genreList;
     private int nbrVote;
     private double popularite;
     private Date sortieDuFilm;
-    private ArrayList<Film> listFilmRecommande;
-
+    private ArrayList<Video> listeVideo;
     //Les variables specifique a une requette
-    private int compteurRequete;
-    private int nombrePageTotal;
-    private int pageActuel;
-    private int maxReq;
-    private int nbrResWanted;
     private String finalReq;
     private String apiKey;
     private String baseReq;
@@ -96,7 +91,6 @@ public class FilmDetail extends Activity {
         } else {
             finish();
         }
-
         //Init du loading
         loadingSpinner = (ProgressBar) findViewById(R.id.loadingFilm);
         loadingSpinner.setVisibility(View.VISIBLE);
@@ -111,10 +105,19 @@ public class FilmDetail extends Activity {
             }
         });
 
-        //Init et lancement de la requette
+        //Init et lancement de la req de detail
         this.finalReq = this.baseReq + this.idFilm + "?api_key=" + this.apiKey;
         this.executeRequeteDetail();
         Log.v(TAG, "Final reqq : " + this.finalReq);
+
+
+        //Creation du recycler view pour les video attaché au film
+        this.listeVideo = new ArrayList<Video>();
+        videoView = (RecyclerView) findViewById(R.id.videoCorrespondMovie);
+        videoAdapter = new VideoAdapter(this.listeVideo, getApplicationContext());
+        videoView.setAdapter(videoAdapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        videoView.setLayoutManager(layoutManager);
     }
 
     @Override
@@ -130,7 +133,7 @@ public class FilmDetail extends Activity {
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, this.finalReq, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                    constructFromJson(response.toString());
+                constructFromJson(response.toString());
             }
         }, new Response.ErrorListener() {
 
@@ -222,15 +225,8 @@ public class FilmDetail extends Activity {
             //Apres le chargement de la page on fait disparaitre le loading
             loadingSpinner.setVisibility(View.GONE);
 
-            //Mais on va chargé les video youtube du film
-            //Definition de la recycler view
-            RecyclerView listVideoFilm = (RecyclerView) findViewById(R.id.videoCorrespondMovie);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-            listVideoFilm.setLayoutManager(layoutManager);
-
-
-            //Puis on charge les film recommendé
-            this.afficherRecommendation();
+            //chargement des video du film
+            this.afficherListeVideo();
 
             //On dit qu'on a reussis la construction du film
             res = true;
@@ -242,71 +238,40 @@ public class FilmDetail extends Activity {
     }
 
     //Methode affichant la liste des film recommandé
-    public void afficherRecommendation(){
-        //On va charger les recommendations
-        this.compteurRequete = 1;
-        this.maxReq = 3; //3 requette suffise pour affiché une grosse list ede recommendation
-        this.pageActuel = 1;
-        this.nombrePageTotal = 1;
-        this.nbrResWanted = 20;
-        this.finalReq = this.baseReq + this.idFilm + "/recommendations?api_key=" + this.apiKey;
-        this.listFilmRecommande = new ArrayList<Film>();
-        this.executeRequeteRecommendation();
-
-
-        RecyclerView listMovieRecommended = (RecyclerView) findViewById(R.id.recommendedMovie);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        listMovieRecommended.setLayoutManager(layoutManager);
-        RecommendedMovieAdapter recommendedAdapter = new RecommendedMovieAdapter(getApplicationContext(), this.listFilmRecommande);
-        listMovieRecommended.setAdapter(recommendedAdapter);
+    public void afficherListeVideo() {
+        //On va charger les videos
+        this.finalReq = this.baseReq + this.idFilm + "/videos?api_key=" + this.apiKey;
+        this.executeRequetevideo();
     }
 
     //Methode executant la requette pour avoir les recommendation d'un film
-    private void executeRequeteRecommendation() {
+    private void executeRequetevideo() {
         //Init de la request queue pour la requette
         RequestQueue queue = Volley.newRequestQueue(this.contextPourRequette);
 
-        if (pageActuel <= nombrePageTotal && compteurRequete < this.maxReq && this.listFilmRecommande.size() <= this.nbrResWanted) {
-            JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, this.finalReq + "&page=" + pageActuel, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, this.finalReq, null, new Response.Listener<JSONObject>() {
 
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        for (int i = 0; i < response.getJSONArray("results").length(); i++) {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    for (int i = 0; i < response.getJSONArray("results").length(); i++) {
 
-                            Film tmp = new Film(response.getJSONArray("results").get(i).toString());
-
-                            //Si le film n'est pas deja dans la liste des film
-                            boolean dejaDansListe = false;
-                            for (int j = 0; j < listFilmRecommande.size(); j++) {
-                                if (listFilmRecommande.get(j).equals(tmp)) {
-                                    dejaDansListe = true;
-                                }
-                            }
-                            if (!dejaDansListe) {
-                                listFilmRecommande.add(tmp);
-                            }
-                        }
-                        nombrePageTotal = (int) response.get("total_pages");
-                        pageActuel++;
-                        compteurRequete++;
-                        executeRequeteRecommendation();
-                    } catch (JSONException e) {
-                        Log.v(TAG, "Erreur recuperation json : " + e.toString());
+                        listeVideo.add(new Video(response.getJSONArray("results").get(i).toString()));
                     }
+                    //Notification du chargement de video
+                    videoAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    Log.v(TAG, "Erreur recuperation json : " + e.toString());
                 }
-            }, new Response.ErrorListener() {
+            }
+        }, new Response.ErrorListener() {
 
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.v(TAG, "Erreur lors de la requette : " + error.toString());
-                }
-            });
-            queue.add(jsObjRequest);
-        } else {
-            Log.v(TAG, "Liste des film recommandé : " + listFilmRecommande.toString());
-            this.compteurRequete = 1;
-        }
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.v(TAG, "Erreur lors de la requette : " + error.toString());
+            }
+        });
+        queue.add(jsObjRequest);
     }
 
     @Override
@@ -318,13 +283,10 @@ public class FilmDetail extends Activity {
                 ", language='" + language + '\'' +
                 ", photoExist=" + photoExist +
                 ", linkToPhoto='" + linkToPhoto + '\'' +
-                ", videoExist=" + videoExist +
-                ", linkToVideo='" + linkToVideo + '\'' +
                 ", genreList='" + genreList + '\'' +
                 ", nbrVote=" + nbrVote +
                 ", popularite=" + popularite +
                 ", sortieDuFilm=" + sortieDuFilm +
-                ", listFilmRecommande=" + listFilmRecommande +
                 '}';
     }
 }

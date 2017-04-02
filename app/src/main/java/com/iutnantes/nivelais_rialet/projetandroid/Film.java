@@ -38,9 +38,9 @@ public class Film {
     private int nbrVote;
     private double popularite;
 
-    public Film(String titre, Date sortieDuFilm, double popularite) {
+    public Film(String titre, double popularite, String img) {
         this.titre = titre;
-        this.sortieDuFilm = sortieDuFilm;
+        this.linkToImage = img;
         this.popularite = popularite;
     }
 
@@ -55,7 +55,6 @@ public class Film {
                 this.linkToImage = jsonFilm.get("poster_path").toString();
             } else {
                 this.linkToImage = "none";
-                Log.v(TAG, "Aucune image : " + jsonFilm.get("poster_path").toString());
             }
 
             this.synopsis = jsonFilm.get("overview").toString();
@@ -146,7 +145,6 @@ public class Film {
                             res = true;
                             return res;
                         } else {
-                            Log.v(TAG, "Langue correspond pas : " + toVerif.get("language").toString() + " vs " + this.language);
                             res = false;
                             return res;
                         }
