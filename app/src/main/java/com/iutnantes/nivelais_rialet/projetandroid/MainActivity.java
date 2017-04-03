@@ -427,17 +427,18 @@ public class MainActivity extends AppCompatActivity {
                         Snackbar.make(findViewById(R.id.affichageFilm), "No movie were recently consulted.", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
 
-                        //Activation du menu de recherche
-                        navigationView.setCheckedItem(R.id.nav_search);
-                        itemSearch.setChecked(true);
-                        itemSearch.setEnabled(false);
-
                         toolbar.setTitle("Search movie");
                         itemTop.setEnabled(true);
                         itemRecent.setEnabled(true);
                         itemViewed.setEnabled(true);
                         itemEnCour.setEnabled(true);
                         itemFavoris.setEnabled(true);
+
+
+                        //Activation du menu de recherche
+                        navigationView.setCheckedItem(R.id.nav_search);
+                        itemSearch.setChecked(true);
+                        itemSearch.setEnabled(false);
 
                         //On vide la liste de film
                         listFilm = new ArrayList<Film>();
@@ -496,17 +497,18 @@ public class MainActivity extends AppCompatActivity {
                         Snackbar.make(findViewById(R.id.affichageFilm), "No movie were added to favorite.", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
 
-                        //Activation du menu de recherche
-                        navigationView.setCheckedItem(R.id.nav_search);
-                        itemSearch.setChecked(true);
-                        itemSearch.setEnabled(false);
-
                         toolbar.setTitle("Search movie");
                         itemTop.setEnabled(true);
                         itemRecent.setEnabled(true);
                         itemViewed.setEnabled(true);
                         itemEnCour.setEnabled(true);
                         itemFavoris.setEnabled(true);
+
+
+                        //Activation du menu de recherche
+                        navigationView.setCheckedItem(R.id.nav_search);
+                        itemSearch.setChecked(true);
+                        itemSearch.setEnabled(false);
 
                         //On vide la liste de film
                         listFilm = new ArrayList<Film>();
