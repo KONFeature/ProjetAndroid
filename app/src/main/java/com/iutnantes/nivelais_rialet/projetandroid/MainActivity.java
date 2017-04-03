@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listOfTheFilm;
     private int oldPosListView;
     private NavigationView navigationView;
+    private Menu menu;
 
     //Variable specifique au requette
     private int compteurRequete;
@@ -224,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Activation de l'item de recherche par default
         navigationView = (NavigationView) findViewById(R.id.nav_view);
-        Menu menu = navigationView.getMenu();
+        menu = navigationView.getMenu();
         MenuItem itemSearch = menu.findItem(R.id.nav_search);
         itemSearch.setChecked(true);
         itemSearch.setEnabled(false);
@@ -233,7 +234,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 //Recuperation de tout les autre item
-                Menu menu = navigationView.getMenu();
                 MenuItem itemSearch = menu.findItem(R.id.nav_search);
                 MenuItem itemTop = menu.findItem(R.id.nav_top);
                 MenuItem itemRecent = menu.findItem(R.id.nav_recent);
@@ -433,12 +433,13 @@ public class MainActivity extends AppCompatActivity {
                         itemViewed.setEnabled(true);
                         itemEnCour.setEnabled(true);
                         itemFavoris.setEnabled(true);
+                        itemViewed.setChecked(false);
 
 
                         //Activation du menu de recherche
-                        navigationView.setCheckedItem(R.id.nav_search);
                         itemSearch.setChecked(true);
                         itemSearch.setEnabled(false);
+                        navigationView.setCheckedItem(R.id.nav_search);
 
                         //On vide la liste de film
                         listFilm = new ArrayList<Film>();
@@ -503,12 +504,14 @@ public class MainActivity extends AppCompatActivity {
                         itemViewed.setEnabled(true);
                         itemEnCour.setEnabled(true);
                         itemFavoris.setEnabled(true);
+                        itemFavoris.setChecked(false);
 
 
                         //Activation du menu de recherche
-                        navigationView.setCheckedItem(R.id.nav_search);
                         itemSearch.setChecked(true);
                         itemSearch.setEnabled(false);
+                        navigationView.setCheckedItem(R.id.nav_search);
+
 
                         //On vide la liste de film
                         listFilm = new ArrayList<Film>();
@@ -567,8 +570,6 @@ public class MainActivity extends AppCompatActivity {
                 this.prepareRequette();
 
                 //On reset la navigation view
-                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-                Menu menu = navigationView.getMenu();
                 MenuItem itemSearch = menu.findItem(R.id.nav_search);
                 MenuItem itemTop = menu.findItem(R.id.nav_top);
                 MenuItem itemRecent = menu.findItem(R.id.nav_recent);
