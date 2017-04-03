@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private double valProgress;
     private ListView listOfTheFilm;
     private int oldPosListView;
+    private NavigationView navigationView;
 
     //Variable specifique au requette
     private int compteurRequete;
@@ -78,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
 
     //variable pour les film consulté recamment
     private ArrayList<Film> listeFilmRecentlyViewed;
+
+    //variable pour les favoris
+    private ArrayList<Film> listeAddedToFavoris;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
 
         //Init des article consulté recamment
         listeFilmRecentlyViewed = new ArrayList<Film>();
+
+        //idem pour favoris
+        listeAddedToFavoris = new ArrayList<Film>();
 
         //Initialisation des variable de recherche
         final EditText titleEditText = (EditText) findViewById(R.id.titleOfTheMovie);
@@ -216,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
         searchOption.setVisibility(View.GONE);
 
         //Activation de l'item de recherche par default
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu menu = navigationView.getMenu();
         MenuItem itemSearch = menu.findItem(R.id.nav_search);
         itemSearch.setChecked(true);
@@ -226,13 +233,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 //Recuperation de tout les autre item
-                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 Menu menu = navigationView.getMenu();
                 MenuItem itemSearch = menu.findItem(R.id.nav_search);
                 MenuItem itemTop = menu.findItem(R.id.nav_top);
                 MenuItem itemRecent = menu.findItem(R.id.nav_recent);
                 MenuItem itemViewed = menu.findItem(R.id.nav_viewed);
                 MenuItem itemEnCour = menu.findItem(R.id.nav_actually);
+                MenuItem itemFavoris = menu.findItem(R.id.nav_favoris);
 
                 //Recuperation de l'id de l'item selectionné
                 int id = item.getItemId();
@@ -244,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
                     itemRecent.setEnabled(true);
                     itemViewed.setEnabled(true);
                     itemEnCour.setEnabled(true);
+                    itemFavoris.setEnabled(true);
 
                     //On vide la liste de film
                     listFilm = new ArrayList<Film>();
@@ -267,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
                     itemSearch.setEnabled(true);
                     itemViewed.setEnabled(true);
                     itemEnCour.setEnabled(true);
+                    itemFavoris.setEnabled(true);
 
                     //On lance le spinner de chargement
                     loadingSpinner.setVisibility(View.VISIBLE);
@@ -305,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
                     itemRecent.setEnabled(true);
                     itemViewed.setEnabled(true);
                     itemEnCour.setEnabled(true);
+                    itemFavoris.setEnabled(true);
 
                     //On lance le spinner de chargement
                     loadingSpinner.setVisibility(View.VISIBLE);
@@ -344,6 +354,7 @@ public class MainActivity extends AppCompatActivity {
                     itemSearch.setEnabled(true);
                     itemViewed.setEnabled(true);
                     itemRecent.setEnabled(true);
+                    itemFavoris.setEnabled(true);
 
                     //On lance le spinner de chargement
                     loadingSpinner.setVisibility(View.VISIBLE);
@@ -384,6 +395,7 @@ public class MainActivity extends AppCompatActivity {
                         itemRecent.setEnabled(true);
                         itemTop.setEnabled(true);
                         itemEnCour.setEnabled(true);
+                        itemFavoris.setEnabled(true);
 
                         //On desactive l'item de recently viewed manuellement
                         itemViewed.setEnabled(false);
@@ -416,15 +428,16 @@ public class MainActivity extends AppCompatActivity {
                                 .setAction("Action", null).show();
 
                         //Activation du menu de recherche
-                        itemSearch.setEnabled(false);
+                        navigationView.setCheckedItem(R.id.nav_search);
                         itemSearch.setChecked(true);
-                        itemViewed.setChecked(false);
+                        itemSearch.setEnabled(false);
 
                         toolbar.setTitle("Search movie");
                         itemTop.setEnabled(true);
                         itemRecent.setEnabled(true);
                         itemViewed.setEnabled(true);
                         itemEnCour.setEnabled(true);
+                        itemFavoris.setEnabled(true);
 
                         //On vide la liste de film
                         listFilm = new ArrayList<Film>();
@@ -442,10 +455,80 @@ public class MainActivity extends AppCompatActivity {
                         searchOption.setEnabled(false);
                         searchOption.setVisibility(View.GONE);
                     }
+                } else if (id == R.id.nav_favoris) {
+                    //Si on a des film dans la listes des film favoris
+                    if (listeAddedToFavoris.size() > 0) {
+                        //Si l'on charge les meilleur films
+                        toolbar.setTitle("Favorite Movie");
+                        itemSearch.setEnabled(true);
+                        itemRecent.setEnabled(true);
+                        itemTop.setEnabled(true);
+                        itemEnCour.setEnabled(true);
+                        itemViewed.setEnabled(true);
+
+                        //On desactive l'item de recently viewed manuellement
+                        itemFavoris.setEnabled(false);
+
+                        //On lance le spinner de chargement
+                        loadingSpinner.setVisibility(View.VISIBLE);
+
+                        //On vide la liste de film
+                        listFilm = new ArrayList<Film>();
+
+                        //Ajout des films consulté a la liste des films
+                        listFilm.addAll(listeAddedToFavoris);
+
+                        //On reset les var d'affichage d'en tete (pour les pages)
+                        nbrPageAffiche = 1;
+                        nbrPageAfficheTotal = 1;
+
+                        //Affichachage cachage des elements
+                        findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
+                        findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
+                        searchOption.setEnabled(false);
+                        searchOption.setVisibility(View.GONE);
+
+                        waitTheEnd = false;
+                        addMovieToList();
+                    } else {
+                        //Si aucun element dans les films consulté recamment, on affiche le formulaire de recherche
+                        //Petit message expliquant le retour a la vue de recherche
+                        Snackbar.make(findViewById(R.id.affichageFilm), "No movie were added to favorite.", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+
+                        //Activation du menu de recherche
+                        navigationView.setCheckedItem(R.id.nav_search);
+                        itemSearch.setChecked(true);
+                        itemSearch.setEnabled(false);
+
+                        toolbar.setTitle("Search movie");
+                        itemTop.setEnabled(true);
+                        itemRecent.setEnabled(true);
+                        itemViewed.setEnabled(true);
+                        itemEnCour.setEnabled(true);
+                        itemFavoris.setEnabled(true);
+
+                        //On vide la liste de film
+                        listFilm = new ArrayList<Film>();
+
+                        //On reset les var d'affichage d'en tete (pour les pages)
+                        nbrPageAffiche = 1;
+                        nbrPageAfficheTotal = 1;
+
+                        //On prepare la requette
+                        prepareRequette();
+
+                        //Affichage et masquage des bon formulaire et du bouton
+                        findViewById(R.id.searchFormulaire).setVisibility(View.VISIBLE);
+                        findViewById(R.id.affichageFilm).setVisibility(View.GONE);
+                        searchOption.setEnabled(false);
+                        searchOption.setVisibility(View.GONE);
+                    }
+
                 }
 
                 //Désactive l'option selectionné
-                if (id != R.id.nav_viewed) {
+                if (id != R.id.nav_viewed || id != R.id.nav_favoris) {
                     item.setEnabled(false);
                 }
 
@@ -489,10 +572,12 @@ public class MainActivity extends AppCompatActivity {
                 MenuItem itemRecent = menu.findItem(R.id.nav_recent);
                 MenuItem itemViewed = menu.findItem(R.id.nav_viewed);
                 MenuItem itemEnCour = menu.findItem(R.id.nav_actually);
+                MenuItem itemFavoris = menu.findItem(R.id.nav_favoris);
                 itemTop.setEnabled(true);
                 itemRecent.setEnabled(true);
                 itemViewed.setEnabled(true);
                 itemEnCour.setEnabled(true);
+                itemFavoris.setEnabled(true);
                 itemSearch.setEnabled(false);
                 itemSearch.setChecked(true);
 
@@ -598,6 +683,18 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(EXTRA_IDMOVIE, tmp.getId());
                 intent.putExtra(EXTRA_TITLEMOVIE, tmp.getTitre());
                 startActivity(intent);
+            }
+        });
+
+        listOfTheFilm.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Film tmp = (Film) parent.getAdapter().getItem(position);
+                listeAddedToFavoris.add(tmp);
+
+                Snackbar.make(findViewById(R.id.affichageFilm), "This film was added to your favorite", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                return true;
             }
         });
 

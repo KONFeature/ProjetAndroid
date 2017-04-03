@@ -21,6 +21,11 @@
             android:title="@string/rightpannel_actuellement" />
 
         <item
+            android:id="@+id/nav_favoris"
+            android:icon="@drawable/logo_favoris"
+            android:title="@string/rightpannel_favoris" />
+
+        <item
             android:id="@+id/nav_viewed"
             android:icon="@drawable/logo_recently_viewed"
             android:title="@string/rightpannel_consulterecament" />

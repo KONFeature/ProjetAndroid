@@ -14,6 +14,7 @@
     <string name="rightpannel_recent">Upcomming movie</string>
     <string name="rightpannel_actuellement">Actually in theater</string>
     <string name="rightpannel_consulterecament">Recently Viewed</string>
+    <string name="rightpannel_favoris">Favorite Movie</string>
 
 
     <!--String du menu de recherche-->
