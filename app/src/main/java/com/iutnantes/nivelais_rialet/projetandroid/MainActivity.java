@@ -678,7 +678,15 @@ public class MainActivity extends AppCompatActivity {
                 Log.v(TAG, "Click sur un film : "+ tmp.getTitre());
 
                 //Ajout du film a la liste des consulté recamment
-                listeFilmRecentlyViewed.add(tmp);
+                boolean okToAdd = true;
+                for (Film toTest : listeFilmRecentlyViewed) {
+                    if (toTest.equals(tmp)) {
+                        okToAdd = false;
+                    }
+                }
+                if (okToAdd) {
+                    listeFilmRecentlyViewed.add(tmp);
+                }
 
                 //Passage a l'autre vue
                 Intent intent = new Intent(MainActivity.this, FilmDetail.class);
@@ -692,10 +700,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Film tmp = (Film) parent.getAdapter().getItem(position);
-                listeAddedToFavoris.add(tmp);
+                boolean okToAdd = true;
+                for (Film toTest : listeAddedToFavoris) {
+                    if (toTest.equals(tmp)) {
+                        okToAdd = false;
+                    }
+                }
+                if (okToAdd) {
+                    listeAddedToFavoris.add(tmp);
 
-                Snackbar.make(findViewById(R.id.affichageFilm), "This film was added to your favorite", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                    Snackbar.make(findViewById(R.id.affichageFilm), "This film was added to your favorite", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+
                 return true;
             }
         });
