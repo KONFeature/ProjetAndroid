@@ -150,6 +150,11 @@ public class MainActivity extends AppCompatActivity {
                     nbrPageAffiche = 1;
                     nbrPageAfficheTotal = 1;
 
+                    //Si l'age max est inferieur a 0 on le redef a 0
+                    if (Integer.parseInt(ageMaxText.getText().toString()) < 0) {
+                        ageMaxText.setText("0");
+                    }
+
                     //Cachage du formulaire de recherche, affichage de la liste de resultat et du bouton
                     findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
                     findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
@@ -479,6 +484,10 @@ public class MainActivity extends AppCompatActivity {
                 //Update de l'affiche de la page
                 nbrPageAffiche = (firstVisibleItem / 20) + 1;
                 nbrPageAfficheTotal = (totalItemCount / 20);
+                //Arrondie superieur
+                if (totalItemCount / 20 < 10) {
+                    nbrPageAfficheTotal++;
+                }
                 affichagePage.setText("Page " + nbrPageAffiche + " of " + nbrPageAfficheTotal + " : " + totalItemCount + " results");
 
                 //Definition du dernier item visible de la liste
