@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private double valProgress;
     private ListView listOfTheFilm;
     private int oldPosListView;
+    private TextView affichagePage;
 
     //Variable specifique au requette
     private int compteurRequete;
@@ -86,6 +87,10 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         searchOption = (FloatingActionButton) findViewById(R.id.search_parameters);
+
+        //Init de la textview du nombre de page
+        this.affichagePage = (TextView) findViewById(R.id.pageMovieAffichage);
+        this.affichagePage.setText("Page 1 of 1 : 20 result");
 
         //Init du chargement
         this.loadingSpinner = (ProgressBar) findViewById(R.id.loadingListFilm);
@@ -408,6 +413,9 @@ public class MainActivity extends AppCompatActivity {
 
     //Methode ajoutant la liste des films a la vue
     private void addMovieToList() {
+        //Update de l'affiche de la page
+        this.affichagePage.setText("Page "+pageActuel+" of "+nombrePageTotal+" : "+this.listFilm.size()+" results");
+
         //Creation de l'adapter
         FilmAdapter affichageFilm = new FilmAdapter(this.contextPourRequette, this.listFilm);
         listOfTheFilm = (ListView) findViewById(R.id.listOfFilm);
@@ -452,18 +460,24 @@ public class MainActivity extends AppCompatActivity {
                 //Si le dernier item est egal au total des item on recharge des films et si on affiche plus d'item que la page peut en contenir
                 if (lastItem == totalItemCount && listFilm.size() > 0 && lastItem > visibleItemCount) {
                     //On affiche un petit message
-                    Snackbar.make(findViewById(R.id.affichageFilm), "New film loading...", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
 
                     //On recupere la position avant l'ajout des item
                     oldPosListView = firstVisibleItem;
-                    if (!waitTheEnd) {
+                    if (!waitTheEnd && pageActuel<nombrePageTotal) {
+                        //Augmentation du nombre de resultat et chargement des nouveaux film
                         nbrResWanted += 20;
+                        envoiRequette();
+
+                        //On affiche un petit message de chargement
+                        Snackbar.make(findViewById(R.id.affichageFilm), "New film loading...", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    } else if(pageActuel>=nombrePageTotal){
+                        //On affiche un petit message
+                        Snackbar.make(findViewById(R.id.affichageFilm), "You reached the bottom of the list", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
                     }
                     waitTheEnd = true;
 
-                    //Et on recharge les nouveaux item
-                    envoiRequette();
                 }
             }
         });
