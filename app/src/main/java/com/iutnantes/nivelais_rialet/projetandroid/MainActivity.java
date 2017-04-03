@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
     private double valProgress;
     private ListView listOfTheFilm;
     private int oldPosListView;
-    private TextView affichagePage;
 
     //Variable specifique au requette
     private int compteurRequete;
@@ -71,6 +70,11 @@ public class MainActivity extends AppCompatActivity {
     private String baseReq;
     private Context contextPourRequette;
     private boolean waitTheEnd = false;
+
+    //Variable specifique a l'affichage de la petite bar en haut (pour les pages)
+    private TextView affichagePage;
+    private int nbrPageAffiche = 1;
+    private int nbrPageAfficheTotal = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +145,10 @@ public class MainActivity extends AppCompatActivity {
 
                     //On vide la liste de film
                     listFilm = new ArrayList<Film>();
+
+                    //On reset les var d'affichage d'en tete (pour les pages)
+                    nbrPageAffiche = 1;
+                    nbrPageAfficheTotal = 1;
 
                     //Cachage du formulaire de recherche, affichage de la liste de resultat et du bouton
                     findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
@@ -225,6 +233,10 @@ public class MainActivity extends AppCompatActivity {
                     //On vide la liste de film
                     listFilm = new ArrayList<Film>();
 
+                    //On reset les var d'affichage d'en tete (pour les pages)
+                    nbrPageAffiche = 1;
+                    nbrPageAfficheTotal = 1;
+
                     //On prepare la requette
                     prepareRequette();
 
@@ -244,6 +256,10 @@ public class MainActivity extends AppCompatActivity {
 
                     //On vide la liste de film
                     listFilm = new ArrayList<Film>();
+
+                    //On reset les var d'affichage d'en tete (pour les pages)
+                    nbrPageAffiche = 1;
+                    nbrPageAfficheTotal = 1;
 
                     //Affichachage cachage des elements
                     findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
@@ -276,6 +292,10 @@ public class MainActivity extends AppCompatActivity {
 
                     //On vide la liste de film
                     listFilm = new ArrayList<Film>();
+
+                    //On reset les var d'affichage d'en tete (pour les pages)
+                    nbrPageAffiche = 1;
+                    nbrPageAfficheTotal = 1;
 
                     //Affichachage cachage des elements
                     findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
@@ -326,6 +346,10 @@ public class MainActivity extends AppCompatActivity {
 
                 //On vide la liste des films
                 this.listFilm = new ArrayList<Film>();
+
+                //On reset les var d'affichage d'en tete (pour les pages)
+                this.nbrPageAffiche = 1;
+                this.nbrPageAfficheTotal = 1;
 
                 //On reset les requette
                 this.prepareRequette();
@@ -413,8 +437,6 @@ public class MainActivity extends AppCompatActivity {
 
     //Methode ajoutant la liste des films a la vue
     private void addMovieToList() {
-        //Update de l'affiche de la page
-        this.affichagePage.setText("Page "+pageActuel+" of "+nombrePageTotal+" : "+this.listFilm.size()+" results");
 
         //Creation de l'adapter
         FilmAdapter affichageFilm = new FilmAdapter(this.contextPourRequette, this.listFilm);
@@ -454,12 +476,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                //Update de l'affiche de la page
+                nbrPageAffiche = (firstVisibleItem / 20) + 1;
+                nbrPageAfficheTotal = (totalItemCount / 20);
+                affichagePage.setText("Page " + nbrPageAffiche + " of " + nbrPageAfficheTotal + " : " + totalItemCount + " results");
+
                 //Definition du dernier item visible de la liste
                 final int lastItem = firstVisibleItem + visibleItemCount;
 
                 //Si le dernier item est egal au total des item on recharge des films et si on affiche plus d'item que la page peut en contenir
                 if (lastItem == totalItemCount && listFilm.size() > 0 && lastItem > visibleItemCount) {
-                    //On affiche un petit message
 
                     //On recupere la position avant l'ajout des item
                     oldPosListView = firstVisibleItem;

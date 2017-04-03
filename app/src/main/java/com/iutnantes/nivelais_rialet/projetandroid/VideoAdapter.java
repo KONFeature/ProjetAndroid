@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -24,6 +26,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
     private ArrayList<Video> listVideo;
     private String youtubeVideoId;
     private Context context;
+
+    //Var pour l'animation
+    private int lastPosition = -1;
 
     public VideoAdapter(ArrayList<Video> listVideo, Context context) {
         this.listVideo = listVideo;
@@ -60,6 +65,18 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
                 }
             }
         });
+
+        //Ajout de la petite animation au lancement du recycler view
+        setAnimation(holder.itemView, position);
+    }
+
+    private void setAnimation(View itemView, int position) {
+        // If the bound view wasn't previously displayed on screen, it's animated
+        if (position > lastPosition) {
+            Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+            itemView.startAnimation(animation);
+            lastPosition = position;
+        }
     }
 
     @Override

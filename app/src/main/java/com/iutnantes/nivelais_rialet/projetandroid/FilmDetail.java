@@ -180,10 +180,14 @@ public class FilmDetail extends Activity {
             } else {
                 JSONArray genresList = (JSONArray) jsonFilm.get("genres");
                 this.genreList = "";
-                for (int i = 0; i < genresList.length(); i++) {
+                //Le for s'arrete a l'avant derniere element
+                for (int i = 0; i < genresList.length() - 1; i++) {
                     JSONObject tmp = new JSONObject((String) genresList.get(i).toString());
                     this.genreList += tmp.get("name").toString() + ", ";
                 }
+                //On rajoute le derniere element (pour ne pas avoir une virgula apres)
+                JSONObject tmp = new JSONObject((String) genresList.get(genresList.length() - 1).toString());
+                this.genreList += tmp.get("name").toString() + ".";
             }
 
             this.language = jsonFilm.get("original_language").toString();
