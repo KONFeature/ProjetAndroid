@@ -16,9 +16,16 @@
             android:title="@string/rightpannel_recent" />
 
         <item
+            android:id="@+id/nav_actually"
+            android:icon="@drawable/logo_actually_theater"
+            android:title="@string/rightpannel_actuellement" />
+
+        <item
             android:id="@+id/nav_viewed"
-            android:icon="@drawable/receent_icon"
+            android:icon="@drawable/logo_recently_viewed"
             android:title="@string/rightpannel_consulterecament" />
+
+
     </group>
 
 </menu>

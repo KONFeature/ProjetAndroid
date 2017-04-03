@@ -11,7 +11,9 @@
     <string name="rightpannel_title">Movie Finder</string>
     <string name="rightpannel_search">Search</string>
     <string name="rightpannel_top">Top movie</string>
-    <string name="rightpannel_recent">Recent movie</string>
+    <string name="rightpannel_recent">Upcomming movie</string>
+    <string name="rightpannel_actuellement">Actually in theater</string>
+    <string name="rightpannel_consulterecament">Recently Viewed</string>
 
 
     <!--String du menu de recherche-->
@@ -30,7 +32,6 @@
     </string-array>
     <string name="searchlayout_popularity_text">Minimum popularity : 0.0</string>
     <string name="searchlayout_launch_button">Search</string>
-    <string name="rightpannel_consulterecament">Recently Viewed</string>
 
 
     <string name="film_detail">Movie Information</string>

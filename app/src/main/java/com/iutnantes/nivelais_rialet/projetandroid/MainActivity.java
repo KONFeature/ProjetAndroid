@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                     nbrPageAfficheTotal = 1;
 
                     //Si l'age max est inferieur a 0 on le redef a 0
-                    if (Integer.parseInt(ageMaxText.getText().toString()) < 0) {
+                    if (ageMaxText.getText().toString().length() > 0 && Integer.parseInt(ageMaxText.getText().toString()) < 0) {
                         ageMaxText.setText("0");
                     }
 
@@ -232,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
                 MenuItem itemTop = menu.findItem(R.id.nav_top);
                 MenuItem itemRecent = menu.findItem(R.id.nav_recent);
                 MenuItem itemViewed = menu.findItem(R.id.nav_viewed);
+                MenuItem itemEnCour = menu.findItem(R.id.nav_actually);
 
                 //Recuperation de l'id de l'item selectionné
                 int id = item.getItemId();
@@ -242,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
                     itemTop.setEnabled(true);
                     itemRecent.setEnabled(true);
                     itemViewed.setEnabled(true);
+                    itemEnCour.setEnabled(true);
 
                     //On vide la liste de film
                     listFilm = new ArrayList<Film>();
@@ -260,10 +262,11 @@ public class MainActivity extends AppCompatActivity {
                     searchOption.setVisibility(View.GONE);
                 } else if (id == R.id.nav_recent) {
                     //Si l'on charge les films les plus recent
-                    toolbar.setTitle("Recent movie");
+                    toolbar.setTitle("Upcomming movie");
                     itemTop.setEnabled(true);
                     itemSearch.setEnabled(true);
                     itemViewed.setEnabled(true);
+                    itemEnCour.setEnabled(true);
 
                     //On lance le spinner de chargement
                     loadingSpinner.setVisibility(View.VISIBLE);
@@ -301,6 +304,7 @@ public class MainActivity extends AppCompatActivity {
                     itemSearch.setEnabled(true);
                     itemRecent.setEnabled(true);
                     itemViewed.setEnabled(true);
+                    itemEnCour.setEnabled(true);
 
                     //On lance le spinner de chargement
                     loadingSpinner.setVisibility(View.VISIBLE);
@@ -332,6 +336,45 @@ public class MainActivity extends AppCompatActivity {
                     paramForFilm = paramDuFilm.toString();
                     Log.v(TAG, "Le JSON a parsé : " + paramDuFilm.toString());
                     envoiRequette();
+                } else if (id == R.id.nav_actually) {
+
+                    //Si l'on charge les films les plus recent
+                    toolbar.setTitle("Actually in Theater");
+                    itemTop.setEnabled(true);
+                    itemSearch.setEnabled(true);
+                    itemViewed.setEnabled(true);
+                    itemRecent.setEnabled(true);
+
+                    //On lance le spinner de chargement
+                    loadingSpinner.setVisibility(View.VISIBLE);
+
+                    //On vide la liste de film
+                    listFilm = new ArrayList<Film>();
+
+                    //On reset les var d'affichage d'en tete (pour les pages)
+                    nbrPageAffiche = 1;
+                    nbrPageAfficheTotal = 1;
+
+                    //Affichachage cachage des elements
+                    findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
+                    findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
+                    searchOption.setEnabled(false);
+                    searchOption.setVisibility(View.GONE);
+
+                    //Chargement des films
+                    nbrResWanted = 20;
+                    prepareRequette();
+                    baseReq = "https://api.themoviedb.org/3/movie/now_playing?api_key=";
+                    finalReq = baseReq + apiKey;
+                    JSONObject paramDuFilm = new JSONObject();
+                    try {
+                        paramDuFilm.put("type", 1);
+                    } catch (JSONException e) {
+                        Log.v(TAG, "Erreur de création du JSON : " + e.toString());
+                    }
+                    paramForFilm = paramDuFilm.toString();
+                    Log.v(TAG, "Le JSON a parsé : " + paramDuFilm.toString());
+                    envoiRequette();
                 } else if (id == R.id.nav_viewed) {
                     //Si on a des film dans la listes des film consulté recamment
                     if (listeFilmRecentlyViewed.size() > 0) {
@@ -340,6 +383,7 @@ public class MainActivity extends AppCompatActivity {
                         itemSearch.setEnabled(true);
                         itemRecent.setEnabled(true);
                         itemTop.setEnabled(true);
+                        itemEnCour.setEnabled(true);
 
                         //On desactive l'item de recently viewed manuellement
                         itemViewed.setEnabled(false);
@@ -373,11 +417,14 @@ public class MainActivity extends AppCompatActivity {
 
                         //Activation du menu de recherche
                         itemSearch.setEnabled(false);
+                        itemSearch.setChecked(true);
+                        itemViewed.setChecked(false);
 
                         toolbar.setTitle("Search movie");
                         itemTop.setEnabled(true);
                         itemRecent.setEnabled(true);
                         itemViewed.setEnabled(true);
+                        itemEnCour.setEnabled(true);
 
                         //On vide la liste de film
                         listFilm = new ArrayList<Film>();
@@ -440,8 +487,12 @@ public class MainActivity extends AppCompatActivity {
                 MenuItem itemSearch = menu.findItem(R.id.nav_search);
                 MenuItem itemTop = menu.findItem(R.id.nav_top);
                 MenuItem itemRecent = menu.findItem(R.id.nav_recent);
+                MenuItem itemViewed = menu.findItem(R.id.nav_viewed);
+                MenuItem itemEnCour = menu.findItem(R.id.nav_actually);
                 itemTop.setEnabled(true);
                 itemRecent.setEnabled(true);
+                itemViewed.setEnabled(true);
+                itemEnCour.setEnabled(true);
                 itemSearch.setEnabled(false);
                 itemSearch.setChecked(true);
 
