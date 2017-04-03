@@ -76,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
     private int nbrPageAffiche = 1;
     private int nbrPageAfficheTotal = 1;
 
+    //variable pour les film consulté recamment
+    private ArrayList<Film> listeFilmRecentlyViewed;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Init des variable de base pour l'envoi de requette
@@ -99,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
         //Init du chargement
         this.loadingSpinner = (ProgressBar) findViewById(R.id.loadingListFilm);
         loadingSpinner.setVisibility(View.GONE);
+
+        //Init des article consulté recamment
+        listeFilmRecentlyViewed = new ArrayList<Film>();
 
         //Initialisation des variable de recherche
         final EditText titleEditText = (EditText) findViewById(R.id.titleOfTheMovie);
@@ -225,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
                 MenuItem itemSearch = menu.findItem(R.id.nav_search);
                 MenuItem itemTop = menu.findItem(R.id.nav_top);
                 MenuItem itemRecent = menu.findItem(R.id.nav_recent);
+                MenuItem itemViewed = menu.findItem(R.id.nav_viewed);
 
                 //Recuperation de l'id de l'item selectionné
                 int id = item.getItemId();
@@ -234,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
                     toolbar.setTitle("Search movie");
                     itemTop.setEnabled(true);
                     itemRecent.setEnabled(true);
+                    itemViewed.setEnabled(true);
 
                     //On vide la liste de film
                     listFilm = new ArrayList<Film>();
@@ -255,6 +263,7 @@ public class MainActivity extends AppCompatActivity {
                     toolbar.setTitle("Recent movie");
                     itemTop.setEnabled(true);
                     itemSearch.setEnabled(true);
+                    itemViewed.setEnabled(true);
 
                     //On lance le spinner de chargement
                     loadingSpinner.setVisibility(View.VISIBLE);
@@ -291,6 +300,7 @@ public class MainActivity extends AppCompatActivity {
                     toolbar.setTitle("Top movie");
                     itemSearch.setEnabled(true);
                     itemRecent.setEnabled(true);
+                    itemViewed.setEnabled(true);
 
                     //On lance le spinner de chargement
                     loadingSpinner.setVisibility(View.VISIBLE);
@@ -322,10 +332,75 @@ public class MainActivity extends AppCompatActivity {
                     paramForFilm = paramDuFilm.toString();
                     Log.v(TAG, "Le JSON a parsé : " + paramDuFilm.toString());
                     envoiRequette();
+                } else if (id == R.id.nav_viewed) {
+                    //Si on a des film dans la listes des film consulté recamment
+                    if (listeFilmRecentlyViewed.size() > 0) {
+                        //Si l'on charge les meilleur films
+                        toolbar.setTitle("Recently Viewed Movie");
+                        itemSearch.setEnabled(true);
+                        itemRecent.setEnabled(true);
+                        itemTop.setEnabled(true);
+
+                        //On desactive l'item de recently viewed manuellement
+                        itemViewed.setEnabled(false);
+
+                        //On lance le spinner de chargement
+                        loadingSpinner.setVisibility(View.VISIBLE);
+
+                        //On vide la liste de film
+                        listFilm = new ArrayList<Film>();
+
+                        //Ajout des films consulté a la liste des films
+                        listFilm.addAll(listeFilmRecentlyViewed);
+
+                        //On reset les var d'affichage d'en tete (pour les pages)
+                        nbrPageAffiche = 1;
+                        nbrPageAfficheTotal = 1;
+
+                        //Affichachage cachage des elements
+                        findViewById(R.id.searchFormulaire).setVisibility(View.GONE);
+                        findViewById(R.id.affichageFilm).setVisibility(View.VISIBLE);
+                        searchOption.setEnabled(false);
+                        searchOption.setVisibility(View.GONE);
+
+                        waitTheEnd = false;
+                        addMovieToList();
+                    } else {
+                        //Si aucun element dans les films consulté recamment, on affiche le formulaire de recherche
+                        //Petit message expliquant le retour a la vue de recherche
+                        Snackbar.make(findViewById(R.id.affichageFilm), "No movie were recently consulted.", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+
+                        //Activation du menu de recherche
+                        itemSearch.setEnabled(false);
+
+                        toolbar.setTitle("Search movie");
+                        itemTop.setEnabled(true);
+                        itemRecent.setEnabled(true);
+                        itemViewed.setEnabled(true);
+
+                        //On vide la liste de film
+                        listFilm = new ArrayList<Film>();
+
+                        //On reset les var d'affichage d'en tete (pour les pages)
+                        nbrPageAffiche = 1;
+                        nbrPageAfficheTotal = 1;
+
+                        //On prepare la requette
+                        prepareRequette();
+
+                        //Affichage et masquage des bon formulaire et du bouton
+                        findViewById(R.id.searchFormulaire).setVisibility(View.VISIBLE);
+                        findViewById(R.id.affichageFilm).setVisibility(View.GONE);
+                        searchOption.setEnabled(false);
+                        searchOption.setVisibility(View.GONE);
+                    }
                 }
 
                 //Désactive l'option selectionné
-                item.setEnabled(false);
+                if (id != R.id.nav_viewed) {
+                    item.setEnabled(false);
+                }
 
                 //Reaffichage du drawer
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -463,6 +538,9 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Film tmp = (Film) parent.getAdapter().getItem(position);
                 Log.v(TAG, "Click sur un film : "+ tmp.getTitre());
+
+                //Ajout du film a la liste des consulté recamment
+                listeFilmRecentlyViewed.add(tmp);
 
                 //Passage a l'autre vue
                 Intent intent = new Intent(MainActivity.this, FilmDetail.class);

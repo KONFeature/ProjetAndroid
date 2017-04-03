@@ -30,6 +30,7 @@
     </string-array>
     <string name="searchlayout_popularity_text">Minimum popularity : 0.0</string>
     <string name="searchlayout_launch_button">Search</string>
+    <string name="rightpannel_consulterecament">Recently Viewed</string>
 
 
     <string name="film_detail">Movie Information</string>

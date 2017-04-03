@@ -14,6 +14,11 @@
             android:id="@+id/nav_recent"
             android:icon="@drawable/receent_icon"
             android:title="@string/rightpannel_recent" />
+
+        <item
+            android:id="@+id/nav_viewed"
+            android:icon="@drawable/receent_icon"
+            android:title="@string/rightpannel_consulterecament" />
     </group>
 
 </menu>
