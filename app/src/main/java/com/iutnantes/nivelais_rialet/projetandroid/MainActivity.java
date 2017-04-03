@@ -451,13 +451,18 @@ public class MainActivity extends AppCompatActivity {
 
                 //Si le dernier item est egal au total des item on recharge des films et si on affiche plus d'item que la page peut en contenir
                 if (lastItem == totalItemCount && listFilm.size() > 0 && lastItem > visibleItemCount) {
+                    //On affiche un petit message
+                    Snackbar.make(findViewById(R.id.affichageFilm), "New film loading...", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+
                     //On recupere la position avant l'ajout des item
                     oldPosListView = firstVisibleItem;
-                    Log.v(TAG, "Ancienne position : " + oldPosListView);
                     if (!waitTheEnd) {
                         nbrResWanted += 20;
                     }
                     waitTheEnd = true;
+
+                    //Et on recharge les nouveaux item
                     envoiRequette();
                 }
             }
