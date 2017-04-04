@@ -56,7 +56,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder
             public void onClick(View v) {
                 Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + youtubeVideoId));
                 Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + youtubeVideoId));
-                Log.v(TAG, "Click sur le btn de lancement ");
 
                 try {
                     context.startActivity(appIntent);
